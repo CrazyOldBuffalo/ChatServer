@@ -1,9 +1,7 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -12,7 +10,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -33,12 +30,13 @@ public class Client extends Application {
     private TextField Message;
     private Button Quit;
     private Button Name;
+    private Button Read;
     private int port = 12345;
     private String hostName = "localhost";
 
 
     @Override
-    public void start(Stage MainScreen) throws Exception {
+    public void start(Stage MainScreen) {
 
         BorderPane mainWindow = new BorderPane();
         FlowPane sendmessages = new FlowPane();
@@ -49,6 +47,7 @@ public class Client extends Application {
 
         Options.setHgap(20);
         sendmessages.setHgap(30);
+        Read = new Button("Read");
         Name = Name();
         Quit = Quit();
         SendMessage = SendMessage();
@@ -62,8 +61,13 @@ public class Client extends Application {
         sendmessages.getChildren().add(SendMessage);
         Options.getChildren().add(Quit);
         Options.getChildren().add(Name);
+        Options.getChildren().add(Read);
         Options.setPrefWidth(80);
         Options.setAlignment(Pos.CENTER);
+        mainWindow.setRight(Options);
+        mainWindow.setBottom(sendmessages);
+        sendmessages.setAlignment(Pos.CENTER);
+        mainWindow.setCenter(DisplayMessage);
 
         try {
             Client client = new Client();
@@ -71,21 +75,19 @@ public class Client extends Application {
             PrintWriter clientOutput = client.ClientPrintWriterBuilder(clientSocket);
             Scanner clientInput = client.ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = client.ClientBufferedReaderBuilder();
+
             WelcomeMessage();
 
             SendMessage.setOnAction(e -> {
                 try {
-                    HandleInput(clientOutput,clientInput, clientStdIn);
+                    HandleInput(clientOutput,clientInput    );
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
             });
 
-            Name.setOnAction(e -> SetName(clientOutput,clientInput, clientStdIn));
-            mainWindow.setRight(Options);
-            mainWindow.setBottom(sendmessages);
-            sendmessages.setAlignment(Pos.CENTER);
-            mainWindow.setCenter(DisplayMessage);
+            Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
+            Name.setOnAction(e -> SetName(clientOutput,clientInput));
             Scene Window = new Scene(mainWindow, 600, 600);
             MainScreen.setScene(Window);
             MainScreen.setTitle("Chat Server");
@@ -102,7 +104,17 @@ public class Client extends Application {
         }
     }
 
-    private void SetName(PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn) {
+    private void ReadMessages(PrintWriter clientOutput, Scanner clientInput) {
+        String userinput = "read";
+        clientOutput.println(userinput);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine());
+        }
+    }
+
+    private void SetName(PrintWriter clientOutput, Scanner clientInput) {
         if (Message.getText().equals("")) {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
             alrt.setContentText("Please Enter a Valid Name");
@@ -167,7 +179,7 @@ public class Client extends Application {
         DisplayMessage.appendText(WelcomeMessage);
     }
 
-    private void HandleInput (PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn)
+    private void HandleInput (PrintWriter clientOutput, Scanner clientInput)
             throws IOException {
         if (Message.getText().equals("")) {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
