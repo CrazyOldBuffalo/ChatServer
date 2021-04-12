@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.tools.javac.Main;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,6 +22,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Client extends Application {
@@ -85,13 +87,13 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-
-            Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
-            Name.setOnAction(e -> SetName(clientOutput,clientInput));
             Scene Window = new Scene(mainWindow, 600, 600);
             MainScreen.setScene(Window);
             MainScreen.setTitle("Chat Server");
             MainScreen.show();
+            Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
+            Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
+            Name.setOnAction(e -> SetName(clientOutput,clientInput));
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -104,6 +106,17 @@ public class Client extends Application {
         }
     }
 
+    private void QuitApp(Socket clientSocket, Stage mainScreen) {
+        try {
+            clientSocket.close();
+            mainScreen.close();
+        }
+        catch (IOException ioe) {
+            System.err.println("Error Closing");
+        }
+    }
+
+
     private void ReadMessages(PrintWriter clientOutput, Scanner clientInput) {
         String userinput = "read";
         clientOutput.println(userinput);
@@ -115,20 +128,27 @@ public class Client extends Application {
     }
 
     private void SetName(PrintWriter clientOutput, Scanner clientInput) {
-        if (Message.getText().equals("")) {
+        String nameoutput;
+        TextInputDialog name = new TextInputDialog();
+        name.setContentText("Please Enter A Name");
+        name.setHeaderText(null);
+        name.setTitle("Name Input");
+        Optional<String> result = name.showAndWait();
+        if (result.isPresent()) {
+           nameoutput = name.getEditor().getText();
+           String userinput = "Name " + nameoutput;
+           clientOutput.println(userinput);
+           int n = clientInput.nextInt();
+           clientInput.nextLine();
+           DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
+        else {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
             alrt.setContentText("Please Enter a Valid Name");
             alrt.setTitle("Name");
             alrt.setHeaderText(null);
             alrt.initStyle(StageStyle.UTILITY);
             alrt.showAndWait();
-        }
-        else {
-            String userinput = "Name " + Message.getText();
-            clientOutput.println(userinput);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
