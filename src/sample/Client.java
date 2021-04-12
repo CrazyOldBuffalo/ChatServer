@@ -68,7 +68,7 @@ public class Client extends Application {
         Options.getChildren().add(Name);
         Options.getChildren().add(CreateRoom);
         Options.getChildren().add(Read);
-        Options.setPrefWidth(80);
+        Options.setPrefWidth(150);
         Options.setAlignment(Pos.CENTER);
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
@@ -137,6 +137,8 @@ public class Client extends Application {
 
     private Button CreateRoom() {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Create Room");
         return btn;
     }
@@ -189,12 +191,16 @@ public class Client extends Application {
 
     private Button Name() {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Name");
         return btn;
     }
 
     private Button Quit () {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Quit");
         return btn;
     }
@@ -220,6 +226,8 @@ public class Client extends Application {
         Button btn = new Button();
         btn.setWrapText(true);
         btn.setText("Send");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setDefaultButton(true);
         return btn;
     }
