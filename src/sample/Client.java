@@ -1,7 +1,5 @@
 package sample;
 
-import com.sun.javafx.scene.traversal.TopMostTraversalEngine;
-import com.sun.tools.javac.Main;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -226,7 +223,6 @@ public class Client extends Application {
         btn.setDefaultButton(true);
         return btn;
     }
-
 
     public static void main (String[]args){
         launch(args);
