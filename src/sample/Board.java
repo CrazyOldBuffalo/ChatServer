@@ -48,7 +48,7 @@ public class Board {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Message json = new Message(clientName, message, format.format(date));
         messages.add(json);
-        fWriter.append(json.getClientName() + " " + json.getMessage() + " " + json.getDate() + "\n");
+        fWriter.append(json.getClientName()).append(" ").append(json.getMessage()).append(" ").append(json.getDate()).append("\n");
         fWriter.close();
     }
 
@@ -64,7 +64,7 @@ public class Board {
     private void restoreBoard() {
         try {
             BufferedReader fr = new BufferedReader(new FileReader(boardName + ".txt"));
-            String line = null;
+            String line;
             while ((line = fr.readLine()) != null) {
                 String[] archives = parse(line);
                 String username = archives[0];
@@ -97,10 +97,7 @@ public class Board {
     }
 
     public boolean Subscribed(ClientHandler clientHandler) {
-        if (Clients.contains(clientHandler)) {
-            return true;
-        }
-        return false;
+        return Clients.contains(clientHandler);
     }
 
     public int GetMessageCount() {

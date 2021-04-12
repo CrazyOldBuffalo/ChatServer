@@ -1,7 +1,5 @@
 package sample;
 
-import javafx.scene.control.Alert;
-import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,7 +99,7 @@ public class ClientHandler extends Thread {
                         ReadMessages(unread);
                         unread = open.size();
                     }
-                    else if (argument.length() > 0 && boards.containsKey(argument)) {
+                    else if (argument.length() > 1 && boards.containsKey(argument)) {
                         ReadRoomMessages(argument);
                     }
                     else {
@@ -220,7 +218,7 @@ public class ClientHandler extends Thread {
 
     private void Restore() throws IOException {
         BufferedReader fr = new BufferedReader(new FileReader("main.txt"));
-        String line = null;
+        String line;
         while ((line = fr.readLine()) != null) {
 
             String[] archives = parse(line);
@@ -271,7 +269,7 @@ public class ClientHandler extends Thread {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         Message json = new Message(clientName, argument, format.format(date));
-        fWriter.append(json.getClientName() + " " + json.getMessage() + " " + json.getDate() + "\n");
+        fWriter.append(json.getClientName()).append(" ").append(json.getMessage()).append(" ").append(json.getDate()).append("\n");
         open.add(json);
         fWriter.close();
         toClient.println(1);
