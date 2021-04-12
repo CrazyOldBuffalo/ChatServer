@@ -71,7 +71,7 @@ public class Client extends Application {
             PrintWriter clientOutput = client.ClientPrintWriterBuilder(clientSocket);
             Scanner clientInput = client.ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = client.ClientBufferedReaderBuilder();
-            client.WelcomeMessage();
+            WelcomeMessage();
 
             SendMessage.setOnAction(e -> {
                 try {
@@ -103,7 +103,7 @@ public class Client extends Application {
     }
 
     private void SetName(PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn) {
-        if (Message.getText() == "") {
+        if (Message.getText().equals("")) {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
             alrt.setContentText("Please Enter a Valid Name");
             alrt.setTitle("Name");
@@ -162,18 +162,27 @@ public class Client extends Application {
     }
 
     private void WelcomeMessage () {
-        System.out.println("Welcome to the Server, Before Starting Set Your Name with the Command: " + "name " + "Followed by you username");
-        System.out.println("For More Commands & Their Usage type: help");
+        String WelcomeMessage = "Welcome To the Server, To start set your name using the Name Button";
+        DisplayMessage.appendText(WelcomeMessage);
     }
 
     private void HandleInput (PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn)
             throws IOException {
-        String userInput = Message.getText();
-        clientOutput.println(userInput);
-        int n = clientInput.nextInt();
-        clientInput.nextLine();
-        for (int i = 0; i < n; i++) {
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        if (Message.getText().equals("")) {
+            Alert alrt = new Alert(Alert.AlertType.ERROR);
+            alrt.setContentText("Please Enter a Valid Name");
+            alrt.setTitle("Name");
+            alrt.initStyle(StageStyle.UTILITY);
+            alrt.showAndWait();
+        }
+        else {
+            String userInput = Message.getText();
+            clientOutput.println(userInput);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            for (int i = 0; i < n; i++) {
+                DisplayMessage.appendText(clientInput.nextLine() + "\n");
+            }
         }
     }
 
