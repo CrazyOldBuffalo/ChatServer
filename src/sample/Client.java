@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.javafx.scene.traversal.TopMostTraversalEngine;
 import com.sun.tools.javac.Main;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -10,7 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -33,6 +36,7 @@ public class Client extends Application {
     private Button Quit;
     private Button Name;
     private Button Read;
+    private Button CreateRoom;
     private int port = 12345;
     private String hostName = "localhost";
 
@@ -43,15 +47,16 @@ public class Client extends Application {
         BorderPane mainWindow = new BorderPane();
         FlowPane sendmessages = new FlowPane();
         FlowPane Displaymessages = new FlowPane();
-        FlowPane Options = new FlowPane();
+        VBox Options = new VBox();
         FlowPane Heading = new FlowPane();
 
 
-        Options.setHgap(20);
+        Options.setSpacing(40);
         sendmessages.setHgap(30);
         Read = new Button("Read");
         Name = Name();
         Quit = Quit();
+        CreateRoom = CreateRoom();
         SendMessage = SendMessage();
         Message = new TextField();
         label = SetLabel();
@@ -61,8 +66,10 @@ public class Client extends Application {
         sendmessages.getChildren().add(label);
         sendmessages.getChildren().add(Message);
         sendmessages.getChildren().add(SendMessage);
+
         Options.getChildren().add(Quit);
         Options.getChildren().add(Name);
+        Options.getChildren().add(CreateRoom);
         Options.getChildren().add(Read);
         Options.setPrefWidth(80);
         Options.setAlignment(Pos.CENTER);
@@ -80,6 +87,10 @@ public class Client extends Application {
 
             WelcomeMessage();
 
+            Scene Window = new Scene(mainWindow, 600, 600);
+            MainScreen.setScene(Window);
+            MainScreen.setTitle("Chat Server");
+            MainScreen.show();
             SendMessage.setOnAction(e -> {
                 try {
                     HandleInput(clientOutput,clientInput    );
@@ -87,10 +98,7 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            Scene Window = new Scene(mainWindow, 600, 600);
-            MainScreen.setScene(Window);
-            MainScreen.setTitle("Chat Server");
-            MainScreen.show();
+            CreateRoom.setOnAction(e-> Create(clientInput, clientOutput));
             Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
             Name.setOnAction(e -> SetName(clientOutput,clientInput));
@@ -104,6 +112,36 @@ public class Client extends Application {
             System.err.println("Connection to Server has Been Closed");
             System.exit(1);
         }
+    }
+
+    private void Create(Scanner clientInput, PrintWriter clientOutput) {
+        String Roomoutput;
+        TextInputDialog roomname = new TextInputDialog();
+        roomname.setContentText("Please Enter A Room Name");
+        roomname.setHeaderText(null);
+        roomname.setTitle("Room Name Input");
+        Optional<String> result = roomname.showAndWait();
+        Roomoutput = roomname.getEditor().getText();
+        if (Roomoutput.isEmpty() || Roomoutput.length() < 3) {
+            Alert alrt = new Alert(Alert.AlertType.ERROR);
+            alrt.setHeaderText(null);
+            alrt.setTitle("Invalid Room Name");
+            alrt.setContentText("Please Enter a Valid Room");
+            alrt.showAndWait();
+        }
+        else {
+            String userinput = "open " + Roomoutput;
+            clientOutput.println(userinput);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
+    }
+
+    private Button CreateRoom() {
+        Button btn = new Button();
+        btn.setText("Create Room");
+        return btn;
     }
 
     private void QuitApp(Socket clientSocket, Stage mainScreen) {
