@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -13,6 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -30,12 +32,14 @@ public class Client extends Application {
     private TextArea DisplayMessage;
     private TextField Message;
     private Button Quit;
+    private Button Name;
     private int port = 12345;
     private String hostName = "localhost";
 
 
     @Override
     public void start(Stage MainScreen) throws Exception {
+
         BorderPane mainWindow = new BorderPane();
         FlowPane sendmessages = new FlowPane();
         FlowPane Displaymessages = new FlowPane();
@@ -45,6 +49,7 @@ public class Client extends Application {
 
         Options.setHgap(20);
         sendmessages.setHgap(30);
+        Name = Name();
         Quit = Quit();
         SendMessage = SendMessage();
         Message = new TextField();
@@ -56,16 +61,9 @@ public class Client extends Application {
         sendmessages.getChildren().add(Message);
         sendmessages.getChildren().add(SendMessage);
         Options.getChildren().add(Quit);
-        Options.setPrefWidth(100);
-        SendMessage.setOnAction(e -> getMessage());
-        mainWindow.setRight(Options);
-        mainWindow.setBottom(sendmessages);
-        sendmessages.setAlignment(Pos.CENTER);
-        mainWindow.setCenter(DisplayMessage);
-        Scene Window = new Scene(mainWindow, 600, 600);
-        MainScreen.setScene(Window);
-        MainScreen.setTitle("Chat Server");
-        MainScreen.show();
+        Options.getChildren().add(Name);
+        Options.setPrefWidth(80);
+        Options.setAlignment(Pos.CENTER);
 
         try {
             Client client = new Client();
@@ -74,7 +72,24 @@ public class Client extends Application {
             Scanner clientInput = client.ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = client.ClientBufferedReaderBuilder();
             client.WelcomeMessage();
-            client.HandleInput(clientOutput, clientInput, clientStdIn);
+
+            SendMessage.setOnAction(e -> {
+                try {
+                    HandleInput(clientOutput,clientInput, clientStdIn);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
+
+            Name.setOnAction(e -> SetName(clientOutput,clientInput, clientStdIn));
+            mainWindow.setRight(Options);
+            mainWindow.setBottom(sendmessages);
+            sendmessages.setAlignment(Pos.CENTER);
+            mainWindow.setCenter(DisplayMessage);
+            Scene Window = new Scene(mainWindow, 600, 600);
+            MainScreen.setScene(Window);
+            MainScreen.setTitle("Chat Server");
+            MainScreen.show();
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -87,13 +102,33 @@ public class Client extends Application {
         }
     }
 
+    private void SetName(PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn) {
+        if (Message.getText() == "") {
+            Alert alrt = new Alert(Alert.AlertType.ERROR);
+            alrt.setContentText("Please Enter a Valid Name");
+            alrt.setTitle("Name");
+            alrt.initStyle(StageStyle.UTILITY);
+            alrt.showAndWait();
+        }
+        else {
+            String userinput = "Name " + Message.getText();
+            clientOutput.println(userinput);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
+    }
+
+    private Button Name() {
+        Button btn = new Button();
+        btn.setText("Name");
+        return btn;
+    }
+
     private Button Quit () {
         Button btn = new Button();
         btn.setText("Quit");
         return btn;
-    }
-
-    private void getMessage () {
     }
 
     private TextArea DisplayMessage () {
@@ -133,14 +168,12 @@ public class Client extends Application {
 
     private void HandleInput (PrintWriter clientOutput, Scanner clientInput, BufferedReader clientStdIn)
             throws IOException {
-        String userInput;
-        while ((userInput = clientStdIn.readLine()) != null) {
-            clientOutput.println(userInput);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            for (int i = 0; i < n; i++) {
-                System.out.println(clientInput.nextLine());
-            }
+        String userInput = Message.getText();
+        clientOutput.println(userInput);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
