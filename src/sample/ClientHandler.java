@@ -65,10 +65,6 @@ public class ClientHandler extends Thread {
                     argument = clientHandlerScanner.skip(" ").nextLine();
                 }
                 catch (NoSuchElementException e) {
-                    Alert NoMessage = new Alert(Alert.AlertType.ERROR);
-                    NoMessage.setTitle("Message Error");
-                    NoMessage.initStyle(StageStyle.UTILITY);
-                    NoMessage.setContentText("Please Enter a Valid comand and/or Message");
                     System.err.println("Error");
                 }
                 if (command.equalsIgnoreCase("name") || command.equalsIgnoreCase("n")){
