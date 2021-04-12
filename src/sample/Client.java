@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -8,9 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -63,13 +63,15 @@ public class Client extends Application {
         sendmessages.getChildren().add(label);
         sendmessages.getChildren().add(Message);
         sendmessages.getChildren().add(SendMessage);
+        sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
 
         Options.getChildren().add(Quit);
         Options.getChildren().add(Name);
         Options.getChildren().add(CreateRoom);
         Options.getChildren().add(Read);
-        Options.setPrefWidth(80);
+        Options.setPrefWidth(150);
         Options.setAlignment(Pos.CENTER);
+        Options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
         sendmessages.setAlignment(Pos.CENTER);
@@ -137,6 +139,8 @@ public class Client extends Application {
 
     private Button CreateRoom() {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Create Room");
         return btn;
     }
@@ -189,12 +193,16 @@ public class Client extends Application {
 
     private Button Name() {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Name");
         return btn;
     }
 
     private Button Quit () {
         Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setText("Quit");
         return btn;
     }
@@ -220,6 +228,8 @@ public class Client extends Application {
         Button btn = new Button();
         btn.setWrapText(true);
         btn.setText("Send");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
         btn.setDefaultButton(true);
         return btn;
     }
@@ -251,6 +261,7 @@ public class Client extends Application {
             for (int i = 0; i < n; i++) {
                 DisplayMessage.appendText(clientInput.nextLine() + "\n");
             }
+            Message.setText("");
         }
     }
 
