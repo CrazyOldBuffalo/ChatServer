@@ -134,21 +134,21 @@ public class Client extends Application {
         name.setHeaderText(null);
         name.setTitle("Name Input");
         Optional<String> result = name.showAndWait();
-        if (result.isPresent()) {
-           nameoutput = name.getEditor().getText();
-           String userinput = "Name " + nameoutput;
-           clientOutput.println(userinput);
-           int n = clientInput.nextInt();
-           clientInput.nextLine();
-           DisplayMessage.appendText(clientInput.nextLine() + "\n");
-        }
-        else {
+        nameoutput = name.getEditor().getText();
+        if (nameoutput.isEmpty()) {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
             alrt.setContentText("Please Enter a Valid Name");
             alrt.setTitle("Name");
             alrt.setHeaderText(null);
             alrt.initStyle(StageStyle.UTILITY);
             alrt.showAndWait();
+        }
+        else {
+            String userinput = "Name " + nameoutput;
+            clientOutput.println(userinput);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
