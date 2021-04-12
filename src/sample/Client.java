@@ -107,6 +107,7 @@ public class Client extends Application {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
             alrt.setContentText("Please Enter a Valid Name");
             alrt.setTitle("Name");
+            alrt.setHeaderText(null);
             alrt.initStyle(StageStyle.UTILITY);
             alrt.showAndWait();
         }
@@ -170,13 +171,14 @@ public class Client extends Application {
             throws IOException {
         if (Message.getText().equals("")) {
             Alert alrt = new Alert(Alert.AlertType.ERROR);
-            alrt.setContentText("Please Enter a Valid Name");
-            alrt.setTitle("Name");
+            alrt.setContentText("Please Enter Some Text");
+            alrt.setTitle("No Text");
+            alrt.setHeaderText(null);
             alrt.initStyle(StageStyle.UTILITY);
             alrt.showAndWait();
         }
         else {
-            String userInput = Message.getText();
+            String userInput = "post " + Message.getText();
             clientOutput.println(userInput);
             int n = clientInput.nextInt();
             clientInput.nextLine();
