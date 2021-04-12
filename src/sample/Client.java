@@ -123,7 +123,7 @@ public class Client extends Application {
         int n = clientInput.nextInt();
         clientInput.nextLine();
         for (int i = 0; i < n; i++) {
-            DisplayMessage.appendText(clientInput.nextLine());
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
@@ -195,7 +195,7 @@ public class Client extends Application {
     }
 
     private void WelcomeMessage () {
-        String WelcomeMessage = "Welcome To the Server, To start set your name using the Name Button";
+        String WelcomeMessage = "Welcome To the Server, To start set your name using the Name Button" + "\n";
         DisplayMessage.appendText(WelcomeMessage);
     }
 
