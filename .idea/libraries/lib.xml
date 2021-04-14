@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="jar://$PROJECT_DIR$/src/sample/json-simple-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/sample/lib/json-simple-1.1.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
