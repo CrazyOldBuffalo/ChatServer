@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -59,6 +61,7 @@ public class Client extends Application {
         label = SetLabel();
         DisplayMessage = DisplayMessage();
 
+        Displaymessages.getChildren().add(DisplayMessage);
         sendmessages.setPrefHeight(60);
         sendmessages.getChildren().add(label);
         sendmessages.getChildren().add(Message);
@@ -83,7 +86,6 @@ public class Client extends Application {
             PrintWriter clientOutput = client.ClientPrintWriterBuilder(clientSocket);
             Scanner clientInput = client.ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = client.ClientBufferedReaderBuilder();
-
             WelcomeMessage();
 
             Scene Window = new Scene(mainWindow, 600, 600);
@@ -110,6 +112,8 @@ public class Client extends Application {
         } catch (NoSuchElementException clientNSElementException) {
             System.err.println("Connection to Server has Been Closed");
             System.exit(1);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -121,21 +125,15 @@ public class Client extends Application {
         roomname.setTitle("Room Name Input");
         Optional<String> result = roomname.showAndWait();
         Roomoutput = roomname.getEditor().getText();
-        if (Roomoutput.isEmpty() || Roomoutput.length() < 3) {
-            Alert alrt = new Alert(Alert.AlertType.ERROR);
-            alrt.setHeaderText(null);
-            alrt.setTitle("Invalid Room Name");
-            alrt.setContentText("Please Enter a Valid Room");
-            alrt.showAndWait();
-        }
-        else {
-            String userinput = "open " + Roomoutput;
-            clientOutput.println(userinput);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
+        String userinput = "open " + Roomoutput;
+        clientOutput.println(userinput);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
             DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
+
 
     private Button CreateRoom() {
         Button btn = new Button();
@@ -280,6 +278,7 @@ public class Client extends Application {
     private PrintWriter ClientPrintWriterBuilder (Socket clientSocket) throws IOException {
         return new PrintWriter(clientSocket.getOutputStream(), true);
     }
+
 }
 
 
