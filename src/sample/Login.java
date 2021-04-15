@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
@@ -88,7 +89,8 @@ public class Login extends Application {
         HBox box = new HBox(10);
         Button login = loginButton();
         Button quit = quitButton();
-        ActionTarget = new Text();
+        ActionTarget = ActionTgt();
+
 
         pane.add(box, 1,4);
         pane.add(Heading,0,0,2,1);
@@ -99,6 +101,7 @@ public class Login extends Application {
         pane.add(ActionTarget, 1, 6);
 
         box.getChildren().add(login);
+        box.getChildren().add(quit);
 
             login.setOnAction(e -> {
                 try {
@@ -111,6 +114,13 @@ public class Login extends Application {
         return pane;
     }
 
+    private Text ActionTgt() {
+        Text txt = new Text();
+        txt.setFont(AppFont);
+        txt.setFill(Color.RED);
+        return txt;
+    }
+
     private void quit(Stage stage) {
         stage.close();
         System.exit(1);
@@ -120,7 +130,7 @@ public class Login extends Application {
         String usernamevalue = usernamefield.getText();
         String passwordvalue = passwordfield.getText();
         if (passwordvalue.isEmpty() && usernamevalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Username and Password");
+            ActionTarget.setText("Please Enter A Username & Password");
         }
         else if (usernamevalue.isEmpty()) {
             ActionTarget.setText("Please Enter A Username");
@@ -134,6 +144,7 @@ public class Login extends Application {
             if (PasswordCheck()) {
                 Client clt = new Client();
                 Stage stg = new Stage();
+                stage.close();
                 clt.start(stg);
             }
             else {
@@ -168,41 +179,42 @@ public class Login extends Application {
     private Button loginButton() {
         Button btn = new Button();
         btn.setText("Login");
+        btn.setFont(AppFont);
         return btn;
     }
 
     private TextField passwordfield() {
         TextField txt = new TextField();
-        txt.setFont(Font.font("Monospaced", 12));
-        txt.autosize();
+        txt.setFont(AppFont);
+        txt.setPrefColumnCount(15);
         return txt;
     }
 
     private Label passwordlbl() {
         Label lbl = new Label();
         lbl.setText("Password: ");
-        lbl.setFont(Font.font("Monospaced", 12));
+        lbl.setFont(AppFont);
         return lbl;
     }
 
     private TextField usernamefield() {
         TextField txt = new TextField();
-        txt.setFont(Font.font("Monospaced", 12));
-        txt.autosize();
+        txt.setFont(AppFont);
+        txt.setPrefColumnCount(15);
         return txt;
     }
 
     private Label usernamelbl() {
         Label lbl = new Label();
         lbl.setText("UserName: ");
-        lbl.setFont(Font.font("Monospaced", 12));
+        lbl.setFont(AppFont);
         return lbl;
     }
 
     private Text HeadingText() {
         Text txt = new Text();
         txt.setText("Chat Server Login");
-        txt.setFont(Font.font ("Monospaced", 16));
+        txt.setFont(AppFont);
         return txt;
     }
 }
