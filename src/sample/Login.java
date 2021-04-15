@@ -13,12 +13,25 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Base64;
+import java.util.HashMap;
+
 public class Login extends Application {
+
 
     private String Username;
     private String Password;
     private Text ActionTarget;
     private Font AppFont;
+    private final byte[]  salt = new byte[16];
+    SecureRandom random = GenerateRandom();
+    private HashMap<String, String> logins = new HashMap<>();
 
     private void main(String[] args) {
         launch(args);
@@ -27,14 +40,37 @@ public class Login extends Application {
     @Override
     public void start(Stage stage) {
         AppFont = (Font.font("Monospaced", 16));
+        CreateLogins();
         GridPane pane = pane(stage);
         Scene scene = new Scene(pane, 500, 250);
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();
 
+    }
 
+    private void CreateLogins() {
+        try {
+            KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
+            KeySpec specz = new PBEKeySpec("HiGuyz".toCharArray(), salt, 65536, 128);
+            SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            byte[] hash = f.generateSecret(spec).getEncoded();
+            byte[] hashz = f.generateSecret(specz).getEncoded();
+            Base64.Encoder enc = Base64.getEncoder();
+            logins.put("Harry", enc.encodeToString(hash));
+            logins.put("Jack", enc.encodeToString(hash));
+            logins.put("Kate", enc.encodeToString(hashz));
+            logins.put("Sammy", enc.encodeToString(hash));
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException NSAException) {
+            System.err.println("Ooopsie poopsie");
+        }
+    }
 
+    private SecureRandom GenerateRandom() {
+        SecureRandom rnd = new SecureRandom();
+        rnd.nextBytes(salt);
+        return rnd;
     }
 
     private GridPane pane(Stage stage) {
@@ -64,7 +100,13 @@ public class Login extends Application {
 
         box.getChildren().add(login);
 
-        login.setOnAction(e -> login(usernamefield, passwordfield, stage));
+            login.setOnAction(e -> {
+                try {
+                    login(usernamefield, passwordfield, stage);
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException noSuchAlgorithmException) {
+                    noSuchAlgorithmException.printStackTrace();
+                }
+            });
         quit.setOnAction(e -> quit(stage));
         return pane;
     }
@@ -74,7 +116,7 @@ public class Login extends Application {
         System.exit(1);
     }
 
-    private void login(TextField usernamefield,TextField passwordfield, Stage stage) {
+    private void login(TextField usernamefield,TextField passwordfield, Stage stage) throws NoSuchAlgorithmException, InvalidKeySpecException {
         String usernamevalue = usernamefield.getText();
         String passwordvalue = passwordfield.getText();
         if (passwordvalue.isEmpty() && usernamevalue.isEmpty()) {
@@ -89,12 +131,28 @@ public class Login extends Application {
         else {
             Username = usernamevalue;
             Password = passwordvalue;
-            Client client = new Client();
-            Stage st = new Stage();
-            stage.close();
-            client.start(st);
-
+            if (PasswordCheck()) {
+                Client clt = new Client();
+                Stage stg = new Stage();
+                clt.start(stg);
+            }
+            else {
+                ActionTarget.setText("Login Failed");
+            }
         }
+
+    }
+
+    private boolean PasswordCheck() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeySpec kspec = new PBEKeySpec(Password.toCharArray(), salt,65536, 128);
+        SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = f.generateSecret(kspec).getEncoded();
+        Base64.Encoder enc = Base64.getEncoder();
+        String Encoded = enc.encodeToString(hash);
+        if (logins.containsKey(Username)) {
+            return logins.get(Username).equals(Encoded);
+        }
+        return false;
 
     }
 
