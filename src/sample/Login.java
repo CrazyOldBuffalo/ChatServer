@@ -142,10 +142,10 @@ public class Login extends Application {
             Username = usernamevalue;
             Password = passwordvalue;
             if (PasswordCheck()) {
-                Client clt = new Client();
+                Client clt = new Client(Username);
                 Stage stg = new Stage();
-                stage.close();
                 clt.start(stg);
+                stage.close();
             }
             else {
                 ActionTarget.setText("Login Failed");
@@ -164,7 +164,6 @@ public class Login extends Application {
             return logins.get(Username).equals(Encoded);
         }
         return false;
-
     }
 
 
