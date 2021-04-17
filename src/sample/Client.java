@@ -232,7 +232,7 @@ public class Client extends Application {
     private Button Searchbtn() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setFont(AppFont);
         btn.setText("Search");
         return btn;
@@ -241,18 +241,20 @@ public class Client extends Application {
     private Button ReadRoom() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setFont(AppFont);
         btn.setText("Read Room");
+        btn.setWrapText(true);
         return btn;
     }
 
     private Button Quit () {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setFont(AppFont);
         btn.setText("Quit");
+        btn.setWrapText(true);
         return btn;
     }
 
@@ -277,7 +279,7 @@ public class Client extends Application {
     private Button Read() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setText("Read");
         btn.setFont(AppFont);
         return btn;
@@ -288,7 +290,7 @@ public class Client extends Application {
         btn.setWrapText(true);
         btn.setText("Send");
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setDefaultButton(true);
         btn.setFont(AppFont);
         return btn;
@@ -297,8 +299,9 @@ public class Client extends Application {
     private Button CreateRoom() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setText("Create Room");
+        btn.setWrapText(true);
         btn.setFont(AppFont);
         return btn;
     }
@@ -306,8 +309,9 @@ public class Client extends Application {
     private Button SubtoRoom() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setText("Subscribe");
+        btn.setWrapText(true);
         btn.setFont(AppFont);
         return btn;
     }
@@ -315,8 +319,9 @@ public class Client extends Application {
     private Button UnsubtoRoom() {
         Button btn = new Button();
         btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
+        btn.setPrefWidth(130);
         btn.setText("Unsubscribe");
+        btn.setWrapText(true);
         btn.setFont(AppFont);
         return btn;
     }
