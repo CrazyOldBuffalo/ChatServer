@@ -55,13 +55,9 @@ public class Client extends Application {
         FlowPane sendmessages = sendMessage();
         FlowPane Displaymessages = new FlowPane();
         FlowPane Heading = new FlowPane();
-
         VBox Options = createOptions();
         DisplayMessage = DisplayMessage();
-
         Displaymessages.getChildren().add(DisplayMessage);
-
-
 
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
@@ -73,12 +69,8 @@ public class Client extends Application {
             PrintWriter clientOutput = ClientPrintWriterBuilder(clientSocket);
             Scanner clientInput = ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = ClientBufferedReaderBuilder();
-            clientOutput.println("Name " + username);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            for (int i = 0; i < n; i++) {
-                DisplayMessage.appendText(clientInput.nextLine() + "\n");
-            }
+            SetUsername(clientInput, clientOutput);
+
             WelcomeMessage();
 
             Scene Window = new Scene(mainWindow, 600, 600);
@@ -107,6 +99,15 @@ public class Client extends Application {
             System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void SetUsername(Scanner clientInput, PrintWriter clientOutput) {
+        clientOutput.println("Name " + username);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            System.out.println(clientInput.nextLine() + "\n");
         }
     }
 
