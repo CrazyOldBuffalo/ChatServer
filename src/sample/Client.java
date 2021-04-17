@@ -26,20 +26,21 @@ import static javafx.scene.paint.Color.WHITE;
 
 public class Client extends Application {
     private final String username;
-    private Button SendMessage;
+    private final int port = 12345;
+    private final String hostName = "localhost";
+
+    private final Font AppFont = (Font.font("Monospaced", 16));
     private Label label;
     private TextArea DisplayMessage;
     private TextField Message;
-    private Button Quit;
-    private Button Read;
-    private Button CreateRoom;
-    private final int port = 12345;
-    private final String hostName = "localhost";
     private Button Unsubscribe;
     private Button Subscribe;
     private Button Search;
-    private final Font AppFont = (Font.font("Monospaced", 16));
     private Button ReadRoom;
+    private Button Quit;
+    private Button Read;
+    private Button CreateRoom;
+    private Button SendMessage;
 
     public Client(String username) {
         this.username = username;
@@ -84,6 +85,7 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
+            Search.setOnAction(e -> Search(clientInput, clientOutput));
             Subscribe.setOnAction(e -> Scribing("sub",clientInput, clientOutput));
             Unsubscribe.setOnAction(e -> Scribing("unsub",clientInput, clientOutput));
             CreateRoom.setOnAction(e -> Create(clientInput, clientOutput));
@@ -112,41 +114,20 @@ public class Client extends Application {
         }
     }
 
-    private VBox createOptions() {
-        VBox vb = new VBox();
-        vb.setSpacing(40);
-        Read = Read();
-        Quit = Quit();
-        CreateRoom = CreateRoom();
-        Unsubscribe = UnsubtoRoom();
-        Subscribe  = SubtoRoom();
-        ReadRoom = ReadRoom();
-        Search = Searchbtn();
-        vb.getChildren().add(Quit);
-        vb.getChildren().add(CreateRoom);
-        vb.getChildren().add(Subscribe);
-        vb.getChildren().add(Unsubscribe);
-        vb.getChildren().add(Read);
-        vb.getChildren().add(ReadRoom);
-        vb.setPrefWidth(150);
-        vb.setAlignment(Pos.CENTER);
-        vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
-        return vb;
-    }
-
-    private FlowPane sendMessage() {
-        FlowPane fp = new FlowPane();
-        SendMessage = SendMessage();
-        Message = new TextField();
-        label = SetLabel();
-        fp.setHgap(30);
-        fp.setPrefHeight(60);
-        fp.getChildren().add(label);
-        fp.getChildren().add(Message);
-        fp.getChildren().add(SendMessage);
-        fp.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
-
-        return fp;
+    private void Search(Scanner clientInput, PrintWriter clientOutput) {
+        String Output;
+        TextInputDialog Search = new TextInputDialog();
+        Search.setContentText("Please Enter A Search Term");
+        Search.setTitle("Search");
+        Search.setHeaderText(null);
+        Optional<String> result = Search.showAndWait();
+        Output = "search " + Search.getEditor().getText();
+        clientOutput.println(Output);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
     }
 
     private void Scribing(String Type, Scanner clientInput, PrintWriter clientOutput) {
@@ -338,6 +319,44 @@ public class Client extends Application {
         btn.setText("Unsubscribe");
         btn.setFont(AppFont);
         return btn;
+    }
+
+    private VBox createOptions() {
+        VBox vb = new VBox();
+        vb.setSpacing(20);
+        Read = Read();
+        Quit = Quit();
+        CreateRoom = CreateRoom();
+        Unsubscribe = UnsubtoRoom();
+        Subscribe  = SubtoRoom();
+        ReadRoom = ReadRoom();
+        Search = Searchbtn();
+        vb.getChildren().add(Quit);
+        vb.getChildren().add(Subscribe);
+        vb.getChildren().add(Unsubscribe);
+        vb.getChildren().add(Search);
+        vb.getChildren().add(CreateRoom);
+        vb.getChildren().add(ReadRoom);
+        vb.getChildren().add(Read);
+        vb.setPrefWidth(150);
+        vb.setAlignment(Pos.CENTER);
+        vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+        return vb;
+    }
+
+    private FlowPane sendMessage() {
+        FlowPane fp = new FlowPane();
+        SendMessage = SendMessage();
+        Message = new TextField();
+        label = SetLabel();
+        fp.setHgap(30);
+        fp.setPrefHeight(60);
+        fp.getChildren().add(label);
+        fp.getChildren().add(Message);
+        fp.getChildren().add(SendMessage);
+        fp.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        return fp;
     }
     //---------------------------------------------------------------------------------------
 }
