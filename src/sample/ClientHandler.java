@@ -9,11 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 import java.io.FileWriter;
 
 public class ClientHandler extends Thread {
@@ -123,6 +119,9 @@ public class ClientHandler extends Thread {
                     ClientQuit(clientHandlerScanner);
                     return;
                 }
+                else if (command.equalsIgnoreCase("search") && argument.length() > 3) {
+                    Search(argument);
+                }
                 else {
                     toClient.println(1);
                     toClient.println("Please Enter a Valid Command and/or Argument");
@@ -131,6 +130,22 @@ public class ClientHandler extends Thread {
         }
         catch (IOException clientHanlderIoException) {
             System.err.println("Exception while connected");
+        }
+    }
+
+    private void Search(String argument) {
+        List<Message> searchlist = null;
+        for (int i = 0; i < open.size(); i++) {
+            if (open.get(i).getMessage().contains(argument))
+            {
+
+            }
+        }
+        if (searchlist.isEmpty()) {
+            toClient.println("No Items Found");
+        }
+        else {
+            toClient.println("");
         }
     }
 

@@ -4,11 +4,8 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,20 +23,20 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class Client extends Application {
-    private String username;
+    private final String username;
     private Button SendMessage;
     private Label label;
     private TextArea DisplayMessage;
     private TextField Message;
     private Button Quit;
-    private Button Name;
     private Button Read;
     private Button CreateRoom;
-    private int port = 12345;
-    private String hostName = "localhost";
+    private final int port = 12345;
+    private final String hostName = "localhost";
     private Button Unsubscribe;
     private Button Subscribe;
-    private Font AppFont = (Font.font("Monospaced", 16));
+    private final Font AppFont = (Font.font("Monospaced", 16));
+    private Button ReadRoom;
 
     public Client(String username) {
         this.username = username;
@@ -58,7 +55,6 @@ public class Client extends Application {
         Options.setSpacing(40);
         sendmessages.setHgap(30);
         Read = new Button("Read");
-        Name = Name();
         Quit = Quit();
         CreateRoom = CreateRoom();
         SendMessage = SendMessage();
@@ -67,6 +63,7 @@ public class Client extends Application {
         DisplayMessage = DisplayMessage();
         Unsubscribe = UnsubtoRoom();
         Subscribe  = SubtoRoom();
+        ReadRoom = ReadRoom();
 
         Displaymessages.getChildren().add(DisplayMessage);
         sendmessages.setPrefHeight(60);
@@ -76,11 +73,11 @@ public class Client extends Application {
         sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
 
         Options.getChildren().add(Quit);
-        Options.getChildren().add(Name);
         Options.getChildren().add(CreateRoom);
-        Options.getChildren().add(Read);
         Options.getChildren().add(Subscribe);
         Options.getChildren().add(Unsubscribe);
+        Options.getChildren().add(Read);
+        Options.getChildren().add(ReadRoom);
         Options.setPrefWidth(150);
         Options.setAlignment(Pos.CENTER);
         Options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -113,10 +110,10 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            CreateRoom.setOnAction(e-> Create(clientInput, clientOutput));
+            Subscribe.setOnAction(e -> Subscribe(clientInput, clientOutput));
+            CreateRoom.setOnAction(e -> Create(clientInput, clientOutput));
             Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
-            Name.setOnAction(e -> SetName(clientOutput,clientInput));
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -129,6 +126,19 @@ public class Client extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void Subscribe(Scanner clientInput, PrintWriter clientOutput) {
+        String Subscribeoutput;
+
+    }
+
+    private Button ReadRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Read Room");
+        return btn;
     }
 
     private void Create(Scanner clientInput, PrintWriter clientOutput) {
@@ -194,38 +204,7 @@ public class Client extends Application {
         }
     }
 
-    private void SetName(PrintWriter clientOutput, Scanner clientInput) {
-        String nameoutput;
-        TextInputDialog name = new TextInputDialog();
-        name.setContentText("Please Enter A Name");
-        name.setHeaderText(null);
-        name.setTitle("Name Input");
-        Optional<String> result = name.showAndWait();
-        nameoutput = name.getEditor().getText();
-        if (nameoutput.isEmpty()) {
-            Alert alrt = new Alert(Alert.AlertType.ERROR);
-            alrt.setContentText("Please Enter a Valid Name");
-            alrt.setTitle("Name");
-            alrt.setHeaderText(null);
-            alrt.initStyle(StageStyle.UTILITY);
-            alrt.showAndWait();
-        }
-        else {
-            String userinput = "Name " + nameoutput;
-            clientOutput.println(userinput);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
-        }
-    }
 
-    private Button Name() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Name");
-        return btn;
-    }
 
     private Button Quit () {
         Button btn = new Button();
