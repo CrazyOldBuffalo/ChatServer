@@ -7,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -43,6 +42,8 @@ public class Login extends Application {
         AppFont = (Font.font("Monospaced", 16));
         CreateLogins();
         GridPane pane = pane(stage);
+        Background bkground = new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY));
+        pane.setBackground(bkground);
         Scene scene = new Scene(pane, 500, 250);
         stage.setScene(scene);
         stage.setTitle("Login");
@@ -80,7 +81,6 @@ public class Login extends Application {
         pane.setHgap(30);
         pane.setVgap(10);
         pane.setPadding(new Insets(25,25,25,25));
-
         Text Heading = HeadingText();
         Label usernamelabel = usernamelbl();
         TextField usernamefield = usernamefield();
@@ -130,13 +130,13 @@ public class Login extends Application {
         String usernamevalue = usernamefield.getText();
         String passwordvalue = passwordfield.getText();
         if (passwordvalue.isEmpty() && usernamevalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Username & Password");
+            ActionTarget.setText("Enter A Username & Password");
         }
         else if (usernamevalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Username");
+            ActionTarget.setText("Enter A Username");
         }
         else if (passwordvalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Password");
+            ActionTarget.setText("Enter A Password");
         }
         else {
             Username = usernamevalue;
@@ -193,6 +193,7 @@ public class Login extends Application {
         Label lbl = new Label();
         lbl.setText("Password: ");
         lbl.setFont(AppFont);
+        lbl.setTextFill(Color.WHITE);
         return lbl;
     }
 
@@ -207,6 +208,7 @@ public class Login extends Application {
         Label lbl = new Label();
         lbl.setText("UserName: ");
         lbl.setFont(AppFont);
+        lbl.setTextFill(Color.WHITE);
         return lbl;
     }
 
@@ -214,6 +216,7 @@ public class Login extends Application {
         Text txt = new Text();
         txt.setText("Chat Server Login");
         txt.setFont(AppFont);
+        txt.setFill(Color.WHITE);
         return txt;
     }
 }
