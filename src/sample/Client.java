@@ -84,7 +84,8 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            Subscribe.setOnAction(e -> Subscribe(clientInput, clientOutput));
+            Subscribe.setOnAction(e -> Scribing("sub",clientInput, clientOutput));
+            Unsubscribe.setOnAction(e -> Scribing("unsub",clientInput, clientOutput));
             CreateRoom.setOnAction(e -> Create(clientInput, clientOutput));
             Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
@@ -148,24 +149,21 @@ public class Client extends Application {
         return fp;
     }
 
-    private void Subscribe(Scanner clientInput, PrintWriter clientOutput) {
-        String Subscribeoutput;
+    private void Scribing(String Type, Scanner clientInput, PrintWriter clientOutput) {
+        String Output;
         TextInputDialog subscribename = new TextInputDialog();
         subscribename.setContentText("Please Enter A Room Name");
         subscribename.setTitle("Subscribe");
         subscribename.setHeaderText(null);
         Optional<String> result = subscribename.showAndWait();
-        Subscribeoutput = subscribename.getEditor().getText();
-        String userinput = "sub " + Subscribeoutput;
-        clientOutput.println(userinput);
+        Output = Type + " " + subscribename.getEditor().getText();
+        clientOutput.println(Output);
         int n = clientInput.nextInt();
         clientInput.nextLine();
         for (int i = 0; i < n; i++) {
             DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
-
-
 
     private void Create(Scanner clientInput, PrintWriter clientOutput) {
         String Roomoutput;
@@ -194,7 +192,6 @@ public class Client extends Application {
         }
     }
 
-
     private void ReadMessages(PrintWriter clientOutput, Scanner clientInput) {
         String userinput = "read";
         clientOutput.println(userinput);
@@ -206,7 +203,7 @@ public class Client extends Application {
     }
 
     private void WelcomeMessage () {
-        String WelcomeMessage = "Welcome To the Server: " + this.username;
+        String WelcomeMessage = "Welcome To the Server: " + this.username + "\n";
         DisplayMessage.appendText(WelcomeMessage);
     }
 
@@ -231,7 +228,6 @@ public class Client extends Application {
             Message.setText("");
         }
     }
-
 
     //Socket Constructor methods, used for making the sockets and Readers/Scanners for I/O
     private BufferedReader ClientBufferedReaderBuilder () {
@@ -269,7 +265,6 @@ public class Client extends Application {
         btn.setText("Read Room");
         return btn;
     }
-
 
     private Button Quit () {
         Button btn = new Button();
