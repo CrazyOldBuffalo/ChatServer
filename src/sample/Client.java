@@ -4,11 +4,8 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -25,65 +22,43 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 
+import static javafx.scene.paint.Color.WHITE;
+
 public class Client extends Application {
-    private String username;
+    private final String username;
     private Button SendMessage;
     private Label label;
     private TextArea DisplayMessage;
     private TextField Message;
     private Button Quit;
-    private Button Name;
     private Button Read;
     private Button CreateRoom;
-    private int port = 12345;
-    private String hostName = "localhost";
+    private final int port = 12345;
+    private final String hostName = "localhost";
     private Button Unsubscribe;
     private Button Subscribe;
-    private Font AppFont = (Font.font("Monospaced", 16));
+    private Button Search;
+    private final Font AppFont = (Font.font("Monospaced", 16));
+    private Button ReadRoom;
 
     public Client(String username) {
         this.username = username;
     }
 
+    public static void main (String[]args){
+        launch(args);
+    }
 
     @Override
     public void start(Stage MainScreen) {
         BorderPane mainWindow = new BorderPane();
-        FlowPane sendmessages = new FlowPane();
+        FlowPane sendmessages = sendMessage();
         FlowPane Displaymessages = new FlowPane();
-        VBox Options = new VBox();
         FlowPane Heading = new FlowPane();
-
-
-        Options.setSpacing(40);
-        sendmessages.setHgap(30);
-        Read = new Button("Read");
-        Name = Name();
-        Quit = Quit();
-        CreateRoom = CreateRoom();
-        SendMessage = SendMessage();
-        Message = new TextField();
-        label = SetLabel();
+        VBox Options = createOptions();
         DisplayMessage = DisplayMessage();
-        Unsubscribe = UnsubtoRoom();
-        Subscribe  = SubtoRoom();
-
         Displaymessages.getChildren().add(DisplayMessage);
-        sendmessages.setPrefHeight(60);
-        sendmessages.getChildren().add(label);
-        sendmessages.getChildren().add(Message);
-        sendmessages.getChildren().add(SendMessage);
-        sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Options.getChildren().add(Quit);
-        Options.getChildren().add(Name);
-        Options.getChildren().add(CreateRoom);
-        Options.getChildren().add(Read);
-        Options.getChildren().add(Subscribe);
-        Options.getChildren().add(Unsubscribe);
-        Options.setPrefWidth(150);
-        Options.setAlignment(Pos.CENTER);
-        Options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
         sendmessages.setAlignment(Pos.CENTER);
@@ -94,12 +69,8 @@ public class Client extends Application {
             PrintWriter clientOutput = ClientPrintWriterBuilder(clientSocket);
             Scanner clientInput = ClientScannerBuilder(clientSocket);
             BufferedReader clientStdIn = ClientBufferedReaderBuilder();
-            clientOutput.println("Name " + username);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            for (int i = 0; i < n; i++) {
-                DisplayMessage.appendText(clientInput.nextLine() + "\n");
-            }
+            SetUsername(clientInput, clientOutput);
+
             WelcomeMessage();
 
             Scene Window = new Scene(mainWindow, 600, 600);
@@ -113,10 +84,10 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            CreateRoom.setOnAction(e-> Create(clientInput, clientOutput));
+            Subscribe.setOnAction(e -> Subscribe(clientInput, clientOutput));
+            CreateRoom.setOnAction(e -> Create(clientInput, clientOutput));
             Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
-            Name.setOnAction(e -> SetName(clientOutput,clientInput));
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -130,6 +101,71 @@ public class Client extends Application {
             e.printStackTrace();
         }
     }
+
+    private void SetUsername(Scanner clientInput, PrintWriter clientOutput) {
+        clientOutput.println("Name " + username);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            System.out.println(clientInput.nextLine() + "\n");
+        }
+    }
+
+    private VBox createOptions() {
+        VBox vb = new VBox();
+        vb.setSpacing(40);
+        Read = Read();
+        Quit = Quit();
+        CreateRoom = CreateRoom();
+        Unsubscribe = UnsubtoRoom();
+        Subscribe  = SubtoRoom();
+        ReadRoom = ReadRoom();
+        Search = Searchbtn();
+        vb.getChildren().add(Quit);
+        vb.getChildren().add(CreateRoom);
+        vb.getChildren().add(Subscribe);
+        vb.getChildren().add(Unsubscribe);
+        vb.getChildren().add(Read);
+        vb.getChildren().add(ReadRoom);
+        vb.setPrefWidth(150);
+        vb.setAlignment(Pos.CENTER);
+        vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+        return vb;
+    }
+
+    private FlowPane sendMessage() {
+        FlowPane fp = new FlowPane();
+        SendMessage = SendMessage();
+        Message = new TextField();
+        label = SetLabel();
+        fp.setHgap(30);
+        fp.setPrefHeight(60);
+        fp.getChildren().add(label);
+        fp.getChildren().add(Message);
+        fp.getChildren().add(SendMessage);
+        fp.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        return fp;
+    }
+
+    private void Subscribe(Scanner clientInput, PrintWriter clientOutput) {
+        String Subscribeoutput;
+        TextInputDialog subscribename = new TextInputDialog();
+        subscribename.setContentText("Please Enter A Room Name");
+        subscribename.setTitle("Subscribe");
+        subscribename.setHeaderText(null);
+        Optional<String> result = subscribename.showAndWait();
+        Subscribeoutput = subscribename.getEditor().getText();
+        String userinput = "sub " + Subscribeoutput;
+        clientOutput.println(userinput);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
+    }
+
+
 
     private void Create(Scanner clientInput, PrintWriter clientOutput) {
         String Roomoutput;
@@ -146,31 +182,6 @@ public class Client extends Application {
         for (int i = 0; i < n; i++) {
             DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
-    }
-
-
-    private Button CreateRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Create Room");
-        return btn;
-    }
-
-    private Button SubtoRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Subscribe");
-        return btn;
-    }
-
-    private Button UnsubtoRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Unsubscribe");
-        return btn;
     }
 
     private void QuitApp(Socket clientSocket, Stage mainScreen) {
@@ -194,80 +205,8 @@ public class Client extends Application {
         }
     }
 
-    private void SetName(PrintWriter clientOutput, Scanner clientInput) {
-        String nameoutput;
-        TextInputDialog name = new TextInputDialog();
-        name.setContentText("Please Enter A Name");
-        name.setHeaderText(null);
-        name.setTitle("Name Input");
-        Optional<String> result = name.showAndWait();
-        nameoutput = name.getEditor().getText();
-        if (nameoutput.isEmpty()) {
-            Alert alrt = new Alert(Alert.AlertType.ERROR);
-            alrt.setContentText("Please Enter a Valid Name");
-            alrt.setTitle("Name");
-            alrt.setHeaderText(null);
-            alrt.initStyle(StageStyle.UTILITY);
-            alrt.showAndWait();
-        }
-        else {
-            String userinput = "Name " + nameoutput;
-            clientOutput.println(userinput);
-            int n = clientInput.nextInt();
-            clientInput.nextLine();
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
-        }
-    }
-
-    private Button Name() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Name");
-        return btn;
-    }
-
-    private Button Quit () {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Quit");
-        return btn;
-    }
-
-    private TextArea DisplayMessage () {
-        TextArea txtarea = new TextArea();
-        txtarea.setPrefColumnCount(50);
-        txtarea.setPrefRowCount(25);
-        txtarea.setWrapText(true);
-        txtarea.setEditable(false);
-
-        return txtarea;
-    }
-
-    private Label SetLabel () {
-        Label label = new Label();
-        Font f = new Font("Monospaced", 14);
-        label.setText("Message");
-        return label;
-    }
-
-    private Button SendMessage () {
-        Button btn = new Button();
-        btn.setWrapText(true);
-        btn.setText("Send");
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setDefaultButton(true);
-        return btn;
-    }
-
-    public static void main (String[]args){
-        launch(args);
-    }
-
     private void WelcomeMessage () {
-        String WelcomeMessage = "Welcome To the Server, To start set your name using the Name Button" + "\n";
+        String WelcomeMessage = "Welcome To the Server: " + this.username;
         DisplayMessage.appendText(WelcomeMessage);
     }
 
@@ -293,6 +232,8 @@ public class Client extends Application {
         }
     }
 
+
+    //Socket Constructor methods, used for making the sockets and Readers/Scanners for I/O
     private BufferedReader ClientBufferedReaderBuilder () {
         return new BufferedReader(new InputStreamReader(System.in));
     }
@@ -308,7 +249,102 @@ public class Client extends Application {
     private PrintWriter ClientPrintWriterBuilder (Socket clientSocket) throws IOException {
         return new PrintWriter(clientSocket.getOutputStream(), true);
     }
+    // ---------------------------------------------------------------------------------------
 
+    //Element Creation Section - Buttons, Fields, Labels are all made here
+    private Button Searchbtn() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setFont(AppFont);
+        btn.setText("Search");
+        return btn;
+    }
+
+    private Button ReadRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setFont(AppFont);
+        btn.setText("Read Room");
+        return btn;
+    }
+
+
+    private Button Quit () {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setFont(AppFont);
+        btn.setText("Quit");
+        return btn;
+    }
+
+    private TextArea DisplayMessage () {
+        TextArea txtarea = new TextArea();
+        txtarea.setPrefColumnCount(50);
+        txtarea.setPrefRowCount(25);
+        txtarea.setWrapText(true);
+        txtarea.setEditable(false);
+        txtarea.setFont(AppFont);
+        return txtarea;
+    }
+
+    private Label SetLabel () {
+        Label label = new Label();
+        label.setFont(AppFont);
+        label.setTextFill(WHITE);
+        label.setText("Message");
+        return label;
+    }
+
+    private Button Read() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Read");
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Button SendMessage () {
+        Button btn = new Button();
+        btn.setWrapText(true);
+        btn.setText("Send");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setDefaultButton(true);
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Button CreateRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Create Room");
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Button SubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Subscribe");
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Button UnsubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Unsubscribe");
+        btn.setFont(AppFont);
+        return btn;
+    }
+    //---------------------------------------------------------------------------------------
 }
 
 
