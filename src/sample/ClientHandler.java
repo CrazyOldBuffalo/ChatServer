@@ -142,10 +142,14 @@ public class ClientHandler extends Thread {
             }
         }
         if (searchlist.isEmpty()) {
+            toClient.println(1);
             toClient.println("No Items Found");
         }
         else {
-            toClient.println("");
+            toClient.println(searchlist.size());
+            for (int i = 0; i < searchlist.size(); i++) {
+                toClient.println(open.get(i).getClientName() + " Says: " + open.get(i).getMessage() + " On [ " + open.get(i).getDate() + " ]");
+            }
         }
     }
 

@@ -35,6 +35,7 @@ public class Client extends Application {
     private final String hostName = "localhost";
     private Button Unsubscribe;
     private Button Subscribe;
+    private Button Search;
     private final Font AppFont = (Font.font("Monospaced", 16));
     private Button ReadRoom;
 
@@ -42,45 +43,24 @@ public class Client extends Application {
         this.username = username;
     }
 
+    public static void main (String[]args){
+        launch(args);
+    }
 
     @Override
     public void start(Stage MainScreen) {
         BorderPane mainWindow = new BorderPane();
-        FlowPane sendmessages = new FlowPane();
+        FlowPane sendmessages = sendMessage();
         FlowPane Displaymessages = new FlowPane();
-        VBox Options = new VBox();
         FlowPane Heading = new FlowPane();
 
-
-        Options.setSpacing(40);
-        sendmessages.setHgap(30);
-        Read = new Button("Read");
-        Quit = Quit();
-        CreateRoom = CreateRoom();
-        SendMessage = SendMessage();
-        Message = new TextField();
-        label = SetLabel();
+        VBox Options = createOptions();
         DisplayMessage = DisplayMessage();
-        Unsubscribe = UnsubtoRoom();
-        Subscribe  = SubtoRoom();
-        ReadRoom = ReadRoom();
 
         Displaymessages.getChildren().add(DisplayMessage);
-        sendmessages.setPrefHeight(60);
-        sendmessages.getChildren().add(label);
-        sendmessages.getChildren().add(Message);
-        sendmessages.getChildren().add(SendMessage);
-        sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Options.getChildren().add(Quit);
-        Options.getChildren().add(CreateRoom);
-        Options.getChildren().add(Subscribe);
-        Options.getChildren().add(Unsubscribe);
-        Options.getChildren().add(Read);
-        Options.getChildren().add(ReadRoom);
-        Options.setPrefWidth(150);
-        Options.setAlignment(Pos.CENTER);
-        Options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+
+
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
         sendmessages.setAlignment(Pos.CENTER);
@@ -128,18 +108,49 @@ public class Client extends Application {
         }
     }
 
+    private VBox createOptions() {
+        VBox vb = new VBox();
+        vb.setSpacing(40);
+        Read = new Button("Read");
+        Quit = Quit();
+        CreateRoom = CreateRoom();
+        Unsubscribe = UnsubtoRoom();
+        Subscribe  = SubtoRoom();
+        ReadRoom = ReadRoom();
+        Search = Searchbtn();
+        vb.getChildren().add(Quit);
+        vb.getChildren().add(CreateRoom);
+        vb.getChildren().add(Subscribe);
+        vb.getChildren().add(Unsubscribe);
+        vb.getChildren().add(Read);
+        vb.getChildren().add(ReadRoom);
+        vb.setPrefWidth(150);
+        vb.setAlignment(Pos.CENTER);
+        vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+        return vb;
+    }
+
+    private FlowPane sendMessage() {
+        FlowPane fp = new FlowPane();
+        SendMessage = SendMessage();
+        Message = new TextField();
+        label = SetLabel();
+        fp.setHgap(30);
+        fp.setPrefHeight(60);
+        fp.getChildren().add(label);
+        fp.getChildren().add(Message);
+        fp.getChildren().add(SendMessage);
+        fp.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        return fp;
+    }
+
     private void Subscribe(Scanner clientInput, PrintWriter clientOutput) {
         String Subscribeoutput;
 
     }
 
-    private Button ReadRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Read Room");
-        return btn;
-    }
+
 
     private void Create(Scanner clientInput, PrintWriter clientOutput) {
         String Roomoutput;
@@ -156,31 +167,6 @@ public class Client extends Application {
         for (int i = 0; i < n; i++) {
             DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
-    }
-
-
-    private Button CreateRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Create Room");
-        return btn;
-    }
-
-    private Button SubtoRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Subscribe");
-        return btn;
-    }
-
-    private Button UnsubtoRoom() {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Unsubscribe");
-        return btn;
     }
 
     private void QuitApp(Socket clientSocket, Stage mainScreen) {
@@ -202,47 +188,6 @@ public class Client extends Application {
         for (int i = 0; i < n; i++) {
             DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
-    }
-
-
-
-    private Button Quit () {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setText("Quit");
-        return btn;
-    }
-
-    private TextArea DisplayMessage () {
-        TextArea txtarea = new TextArea();
-        txtarea.setPrefColumnCount(50);
-        txtarea.setPrefRowCount(25);
-        txtarea.setWrapText(true);
-        txtarea.setEditable(false);
-
-        return txtarea;
-    }
-
-    private Label SetLabel () {
-        Label label = new Label();
-        Font f = new Font("Monospaced", 14);
-        label.setText("Message");
-        return label;
-    }
-
-    private Button SendMessage () {
-        Button btn = new Button();
-        btn.setWrapText(true);
-        btn.setText("Send");
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(100);
-        btn.setDefaultButton(true);
-        return btn;
-    }
-
-    public static void main (String[]args){
-        launch(args);
     }
 
     private void WelcomeMessage () {
@@ -288,6 +233,82 @@ public class Client extends Application {
         return new PrintWriter(clientSocket.getOutputStream(), true);
     }
 
+    //Element Creation Section - Buttons, Fields, Labels are all made here
+    private Button Searchbtn() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Search");
+        return btn;
+    }
+
+    private Button ReadRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Read Room");
+        return btn;
+    }
+
+
+    private Button Quit () {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Quit");
+        return btn;
+    }
+
+    private TextArea DisplayMessage () {
+        TextArea txtarea = new TextArea();
+        txtarea.setPrefColumnCount(50);
+        txtarea.setPrefRowCount(25);
+        txtarea.setWrapText(true);
+        txtarea.setEditable(false);
+
+        return txtarea;
+    }
+
+    private Label SetLabel () {
+        Label label = new Label();
+        Font f = new Font("Monospaced", 14);
+        label.setText("Message");
+        return label;
+    }
+
+    private Button SendMessage () {
+        Button btn = new Button();
+        btn.setWrapText(true);
+        btn.setText("Send");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setDefaultButton(true);
+        return btn;
+    }
+
+    private Button CreateRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Create Room");
+        return btn;
+    }
+
+    private Button SubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Subscribe");
+        return btn;
+    }
+
+    private Button UnsubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Unsubscribe");
+        return btn;
+    }
 }
 
 
