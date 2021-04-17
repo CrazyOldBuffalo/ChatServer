@@ -22,6 +22,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 
+import static javafx.scene.paint.Color.WHITE;
+
 public class Client extends Application {
     private final String username;
     private Button SendMessage;
@@ -111,7 +113,7 @@ public class Client extends Application {
     private VBox createOptions() {
         VBox vb = new VBox();
         vb.setSpacing(40);
-        Read = new Button("Read");
+        Read = Read();
         Quit = Quit();
         CreateRoom = CreateRoom();
         Unsubscribe = UnsubtoRoom();
@@ -147,7 +149,19 @@ public class Client extends Application {
 
     private void Subscribe(Scanner clientInput, PrintWriter clientOutput) {
         String Subscribeoutput;
-
+        TextInputDialog subscribename = new TextInputDialog();
+        subscribename.setContentText("Please Enter A Room Name");
+        subscribename.setTitle("Subscribe");
+        subscribename.setHeaderText(null);
+        Optional<String> result = subscribename.showAndWait();
+        Subscribeoutput = subscribename.getEditor().getText();
+        String userinput = "sub " + Subscribeoutput;
+        clientOutput.println(userinput);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        }
     }
 
 
@@ -191,7 +205,7 @@ public class Client extends Application {
     }
 
     private void WelcomeMessage () {
-        String WelcomeMessage = "Welcome To the Server, To start set your name using the Name Button" + "\n";
+        String WelcomeMessage = "Welcome To the Server: " + this.username;
         DisplayMessage.appendText(WelcomeMessage);
     }
 
@@ -217,6 +231,8 @@ public class Client extends Application {
         }
     }
 
+
+    //Socket Constructor methods, used for making the sockets and Readers/Scanners for I/O
     private BufferedReader ClientBufferedReaderBuilder () {
         return new BufferedReader(new InputStreamReader(System.in));
     }
@@ -232,12 +248,14 @@ public class Client extends Application {
     private PrintWriter ClientPrintWriterBuilder (Socket clientSocket) throws IOException {
         return new PrintWriter(clientSocket.getOutputStream(), true);
     }
+    // ---------------------------------------------------------------------------------------
 
     //Element Creation Section - Buttons, Fields, Labels are all made here
     private Button Searchbtn() {
         Button btn = new Button();
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
+        btn.setFont(AppFont);
         btn.setText("Search");
         return btn;
     }
@@ -246,6 +264,7 @@ public class Client extends Application {
         Button btn = new Button();
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
+        btn.setFont(AppFont);
         btn.setText("Read Room");
         return btn;
     }
@@ -255,6 +274,7 @@ public class Client extends Application {
         Button btn = new Button();
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
+        btn.setFont(AppFont);
         btn.setText("Quit");
         return btn;
     }
@@ -265,15 +285,25 @@ public class Client extends Application {
         txtarea.setPrefRowCount(25);
         txtarea.setWrapText(true);
         txtarea.setEditable(false);
-
+        txtarea.setFont(AppFont);
         return txtarea;
     }
 
     private Label SetLabel () {
         Label label = new Label();
-        Font f = new Font("Monospaced", 14);
+        label.setFont(AppFont);
+        label.setTextFill(WHITE);
         label.setText("Message");
         return label;
+    }
+
+    private Button Read() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Read");
+        btn.setFont(AppFont);
+        return btn;
     }
 
     private Button SendMessage () {
@@ -283,6 +313,7 @@ public class Client extends Application {
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
         btn.setDefaultButton(true);
+        btn.setFont(AppFont);
         return btn;
     }
 
@@ -291,6 +322,7 @@ public class Client extends Application {
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
         btn.setText("Create Room");
+        btn.setFont(AppFont);
         return btn;
     }
 
@@ -299,6 +331,7 @@ public class Client extends Application {
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
         btn.setText("Subscribe");
+        btn.setFont(AppFont);
         return btn;
     }
 
@@ -307,8 +340,10 @@ public class Client extends Application {
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
         btn.setText("Unsubscribe");
+        btn.setFont(AppFont);
         return btn;
     }
+    //---------------------------------------------------------------------------------------
 }
 
 
