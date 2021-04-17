@@ -134,10 +134,9 @@ public class ClientHandler extends Thread {
     }
 
     private void Search(String argument) {
-        List<Message> searchlist = null;
+        ArrayList<Message> searchlist = new ArrayList<>();
         for (int i = 0; i < open.size(); i++) {
-            if (open.get(i).getMessage().contains(argument))
-            {
+            if (open.get(i).getMessage().indexOf(argument) != -1) {
                 searchlist.add(open.get(i));
             }
         }
