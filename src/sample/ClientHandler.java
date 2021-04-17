@@ -138,7 +138,7 @@ public class ClientHandler extends Thread {
         for (int i = 0; i < open.size(); i++) {
             if (open.get(i).getMessage().contains(argument))
             {
-
+                searchlist.add(open.get(i));
             }
         }
         if (searchlist.isEmpty()) {
