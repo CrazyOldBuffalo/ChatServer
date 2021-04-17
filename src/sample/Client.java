@@ -11,10 +11,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class Client extends Application {
+    private String username;
     private Button SendMessage;
     private Label label;
     private TextArea DisplayMessage;
@@ -36,11 +37,17 @@ public class Client extends Application {
     private Button CreateRoom;
     private int port = 12345;
     private String hostName = "localhost";
+    private Button Unsubscribe;
+    private Button Subscribe;
+    private Font AppFont = (Font.font("Monospaced", 16));
+
+    public Client(String username) {
+        this.username = username;
+    }
 
 
     @Override
     public void start(Stage MainScreen) {
-
         BorderPane mainWindow = new BorderPane();
         FlowPane sendmessages = new FlowPane();
         FlowPane Displaymessages = new FlowPane();
@@ -58,6 +65,8 @@ public class Client extends Application {
         Message = new TextField();
         label = SetLabel();
         DisplayMessage = DisplayMessage();
+        Unsubscribe = UnsubtoRoom();
+        Subscribe  = SubtoRoom();
 
         Displaymessages.getChildren().add(DisplayMessage);
         sendmessages.setPrefHeight(60);
@@ -70,6 +79,8 @@ public class Client extends Application {
         Options.getChildren().add(Name);
         Options.getChildren().add(CreateRoom);
         Options.getChildren().add(Read);
+        Options.getChildren().add(Subscribe);
+        Options.getChildren().add(Unsubscribe);
         Options.setPrefWidth(150);
         Options.setAlignment(Pos.CENTER);
         Options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -79,11 +90,16 @@ public class Client extends Application {
         mainWindow.setCenter(DisplayMessage);
 
         try {
-            Client client = new Client();
-            Socket clientSocket = client.ClientSocketBuilder();
-            PrintWriter clientOutput = client.ClientPrintWriterBuilder(clientSocket);
-            Scanner clientInput = client.ClientScannerBuilder(clientSocket);
-            BufferedReader clientStdIn = client.ClientBufferedReaderBuilder();
+            Socket clientSocket = ClientSocketBuilder();
+            PrintWriter clientOutput = ClientPrintWriterBuilder(clientSocket);
+            Scanner clientInput = ClientScannerBuilder(clientSocket);
+            BufferedReader clientStdIn = ClientBufferedReaderBuilder();
+            clientOutput.println("Name " + username);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            for (int i = 0; i < n; i++) {
+                DisplayMessage.appendText(clientInput.nextLine() + "\n");
+            }
             WelcomeMessage();
 
             Scene Window = new Scene(mainWindow, 600, 600);
@@ -138,6 +154,22 @@ public class Client extends Application {
         btn.setPrefHeight(40);
         btn.setPrefWidth(100);
         btn.setText("Create Room");
+        return btn;
+    }
+
+    private Button SubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Subscribe");
+        return btn;
+    }
+
+    private Button UnsubtoRoom() {
+        Button btn = new Button();
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(100);
+        btn.setText("Unsubscribe");
         return btn;
     }
 
@@ -215,7 +247,7 @@ public class Client extends Application {
 
     private Label SetLabel () {
         Label label = new Label();
-        Font f = new Font("Monospaced", Font.PLAIN, 14);
+        Font f = new Font("Monospaced", 14);
         label.setText("Message");
         return label;
     }

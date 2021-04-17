@@ -7,8 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
@@ -42,6 +42,8 @@ public class Login extends Application {
         AppFont = (Font.font("Monospaced", 16));
         CreateLogins();
         GridPane pane = pane(stage);
+        Background bkground = new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY));
+        pane.setBackground(bkground);
         Scene scene = new Scene(pane, 500, 250);
         stage.setScene(scene);
         stage.setTitle("Login");
@@ -79,7 +81,6 @@ public class Login extends Application {
         pane.setHgap(30);
         pane.setVgap(10);
         pane.setPadding(new Insets(25,25,25,25));
-
         Text Heading = HeadingText();
         Label usernamelabel = usernamelbl();
         TextField usernamefield = usernamefield();
@@ -88,7 +89,8 @@ public class Login extends Application {
         HBox box = new HBox(10);
         Button login = loginButton();
         Button quit = quitButton();
-        ActionTarget = new Text();
+        ActionTarget = ActionTgt();
+
 
         pane.add(box, 1,4);
         pane.add(Heading,0,0,2,1);
@@ -99,6 +101,7 @@ public class Login extends Application {
         pane.add(ActionTarget, 1, 6);
 
         box.getChildren().add(login);
+        box.getChildren().add(quit);
 
             login.setOnAction(e -> {
                 try {
@@ -111,6 +114,13 @@ public class Login extends Application {
         return pane;
     }
 
+    private Text ActionTgt() {
+        Text txt = new Text();
+        txt.setFont(AppFont);
+        txt.setFill(Color.RED);
+        return txt;
+    }
+
     private void quit(Stage stage) {
         stage.close();
         System.exit(1);
@@ -120,21 +130,22 @@ public class Login extends Application {
         String usernamevalue = usernamefield.getText();
         String passwordvalue = passwordfield.getText();
         if (passwordvalue.isEmpty() && usernamevalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Username and Password");
+            ActionTarget.setText("Enter A Username & Password");
         }
         else if (usernamevalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Username");
+            ActionTarget.setText("Enter A Username");
         }
         else if (passwordvalue.isEmpty()) {
-            ActionTarget.setText("Please Enter A Password");
+            ActionTarget.setText("Enter A Password");
         }
         else {
             Username = usernamevalue;
             Password = passwordvalue;
             if (PasswordCheck()) {
-                Client clt = new Client();
+                Client clt = new Client(Username);
                 Stage stg = new Stage();
                 clt.start(stg);
+                stage.close();
             }
             else {
                 ActionTarget.setText("Login Failed");
@@ -153,7 +164,6 @@ public class Login extends Application {
             return logins.get(Username).equals(Encoded);
         }
         return false;
-
     }
 
 
@@ -168,41 +178,45 @@ public class Login extends Application {
     private Button loginButton() {
         Button btn = new Button();
         btn.setText("Login");
+        btn.setFont(AppFont);
         return btn;
     }
 
     private TextField passwordfield() {
         TextField txt = new TextField();
-        txt.setFont(Font.font("Monospaced", 12));
-        txt.autosize();
+        txt.setFont(AppFont);
+        txt.setPrefColumnCount(15);
         return txt;
     }
 
     private Label passwordlbl() {
         Label lbl = new Label();
         lbl.setText("Password: ");
-        lbl.setFont(Font.font("Monospaced", 12));
+        lbl.setFont(AppFont);
+        lbl.setTextFill(Color.WHITE);
         return lbl;
     }
 
     private TextField usernamefield() {
         TextField txt = new TextField();
-        txt.setFont(Font.font("Monospaced", 12));
-        txt.autosize();
+        txt.setFont(AppFont);
+        txt.setPrefColumnCount(15);
         return txt;
     }
 
     private Label usernamelbl() {
         Label lbl = new Label();
         lbl.setText("UserName: ");
-        lbl.setFont(Font.font("Monospaced", 12));
+        lbl.setFont(AppFont);
+        lbl.setTextFill(Color.WHITE);
         return lbl;
     }
 
     private Text HeadingText() {
         Text txt = new Text();
         txt.setText("Chat Server Login");
-        txt.setFont(Font.font ("Monospaced", 16));
+        txt.setFont(AppFont);
+        txt.setFill(Color.WHITE);
         return txt;
     }
 }
