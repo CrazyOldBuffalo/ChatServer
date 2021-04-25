@@ -118,8 +118,9 @@ public class Client extends Application {
         PrintWriter outStream = new PrintWriter(clientSocket.getOutputStream(), true);
         clientOutput.println("image");
         int n = clientInput.nextInt();
+        clientInput.nextLine();
         for(int i=0; i < n; i++) {
-            getFile(instream);
+            System.out.println(clientInput.nextLine());
         }
     }
 

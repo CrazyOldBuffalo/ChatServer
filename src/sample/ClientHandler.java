@@ -140,8 +140,9 @@ public class ClientHandler extends Thread {
         in.read(barray);
         in.close();
         toClient.println(1);
-        out.writeObject(barray);
+        toClient.println(barray);
         out.flush();
+        out.close();
     }
 
     private void Search(String argument) {
