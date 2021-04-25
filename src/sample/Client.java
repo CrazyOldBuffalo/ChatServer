@@ -84,9 +84,7 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            SendMsgToRoom.setOnAction(e -> {
-                SendToRoom(clientInput, clientOutput);
-            });
+            SendMsgToRoom.setOnAction(e -> SendToRoom(clientInput, clientOutput));
             ReadRoom.setOnAction(e -> ReamRoomMsg(clientInput, clientOutput));
             Search.setOnAction(e -> Search(clientInput, clientOutput));
             Subscribe.setOnAction(e -> Scribing("sub ",clientInput, clientOutput));
