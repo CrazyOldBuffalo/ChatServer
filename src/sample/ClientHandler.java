@@ -1,16 +1,11 @@
 package sample;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import javax.imageio.stream.ImageInputStream;
+import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.io.FileWriter;
 
 public class ClientHandler extends Thread {
     private Socket client;
@@ -22,7 +17,7 @@ public class ClientHandler extends Thread {
     private static ArrayList<Message> open = new ArrayList<>();
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
-
+    private ObjectInputStream imageInputStream;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
         client = clientSocket;
@@ -76,6 +71,9 @@ public class ClientHandler extends Thread {
                             PostMessage(argument);
                         }
                     }
+                }
+                else if ((command.equalsIgnoreCase("image"))) {
+                    sendFile("image.jpeg");
                 }
                 else if ((command.equalsIgnoreCase("postto") || command.equalsIgnoreCase("pt")) && (room.length() > 1 && argument.length() > 1)) {
                     if (argument.length() > 25) {
@@ -131,6 +129,19 @@ public class ClientHandler extends Thread {
         catch (IOException clientHanlderIoException) {
             System.err.println("Exception while connected");
         }
+    }
+
+    private void sendFile(String s) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+        FileInputStream in = new FileInputStream(s);
+        long fl = (new File(s)).length();
+        int filelen = (int) fl;
+        byte[] barray = new byte[filelen];
+        in.read(barray);
+        in.close();
+        toClient.println(1);
+        out.writeObject(barray);
+        out.flush();
     }
 
     private void Search(String argument) {

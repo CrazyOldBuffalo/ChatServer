@@ -12,10 +12,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
@@ -41,6 +38,8 @@ public class Client extends Application {
     private Button Read;
     private Button CreateRoom;
     private Button SendMessage;
+    private Button SendMsgToRoom;
+    private Button ImageTest;
 
     public Client(String username) {
         this.username = username;
@@ -80,17 +79,28 @@ public class Client extends Application {
             MainScreen.show();
             SendMessage.setOnAction(e -> {
                 try {
-                    HandleInput(clientOutput,clientInput    );
+                    HandleInput(clientOutput,clientInput);
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
             });
+            SendMsgToRoom.setOnAction(e -> {
+                SendToRoom(clientInput, clientOutput);
+            });
+            ReadRoom.setOnAction(e -> ReamRoomMsg(clientInput, clientOutput));
             Search.setOnAction(e -> Search(clientInput, clientOutput));
-            Subscribe.setOnAction(e -> Scribing("sub",clientInput, clientOutput));
-            Unsubscribe.setOnAction(e -> Scribing("unsub",clientInput, clientOutput));
+            Subscribe.setOnAction(e -> Scribing("sub ",clientInput, clientOutput));
+            Unsubscribe.setOnAction(e -> Scribing("unsub ",clientInput, clientOutput));
             CreateRoom.setOnAction(e -> Create(clientInput, clientOutput));
             Quit.setOnAction(e -> QuitApp(clientSocket, MainScreen));
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
+            ImageTest.setOnAction(e -> {
+                try {
+                    ImageSend(clientSocket, clientOutput, clientInput);
+                } catch (IOException | ClassNotFoundException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -105,28 +115,97 @@ public class Client extends Application {
         }
     }
 
+    private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {
+        ObjectInputStream instream = new ObjectInputStream( clientSocket.getInputStream());
+        PrintWriter outStream = new PrintWriter(clientSocket.getOutputStream(), true);
+        clientOutput.println("image");
+        int n = clientInput.nextInt();
+        for(int i=0; i < n; i++) {
+            getFile(instream);
+        }
+    }
+
+    private void getFile(ObjectInputStream instream) throws IOException, ClassNotFoundException {
+        byte[] barray = (byte[])instream.readObject();
+        FileOutputStream out;
+        out = new FileOutputStream("test.jpg");
+        out.write(barray);
+        out.close();
+    }
+
+
+    //Button Functions Are All Here, In the Order they Appear
+    private void QuitApp(Socket clientSocket, Stage mainScreen) {
+        try {
+            clientSocket.close();
+            mainScreen.close();
+        }
+        catch (IOException ioe) {
+            System.err.println("Error Closing");
+        }
+    }
+
+    private void Search(Scanner clientInput, PrintWriter clientOutput) {
+        String Output;
+        String type = "search ";
+        TextInputDialog Search = new TextInputDialog();
+        Search.setContentText("Please Enter A Search Term");
+        Search.setTitle("Search");
+        Search.setHeaderText(null);
+        Optional<String> result = Search.showAndWait();
+        if (result.isEmpty()) {
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
+        }
+        else {
+            Output = "search " + Search.getEditor().getText();
+            HandleSubmit(type, Output, clientInput, clientOutput);
+        }
+
+    }
+
+    private void ReamRoomMsg(Scanner clientInput, PrintWriter clientOutput) {
+        String Output;
+        String Type = "read ";
+        TextInputDialog Search = new TextInputDialog();
+        Search.setContentText("Please Enter A Room To Read");
+        Search.setTitle("Read Room");
+        Search.setHeaderText(null);
+        Optional<String> result = Search.showAndWait();
+        if (result.isEmpty()) {
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
+        }
+        else {
+            Output = Search.getEditor().getText();
+            HandleSubmit(Type, Output, clientInput, clientOutput);
+        }
+    }
+
+    private void SendToRoom(Scanner clientInput, PrintWriter clientOutput) {
+        String Output;
+        String Type = "postto ";
+        TextInputDialog Search = new TextInputDialog();
+        Search.setContentText("Please Enter A Room To Post To");
+        Search.setTitle("Post To Room");
+        Search.setHeaderText(null);
+        Optional<String> result = Search.showAndWait();
+        if (result.isEmpty() || Message.getText().isEmpty()) {
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
+        }
+        else {
+            Output = Search.getEditor().getText() + " " + Message.getText();
+            HandleSubmit(Type, Output, clientInput, clientOutput);
+        }
+    }
+
     private void SetUsername(Scanner clientInput, PrintWriter clientOutput) {
         clientOutput.println("Name " + username);
         int n = clientInput.nextInt();
         clientInput.nextLine();
         for (int i = 0; i < n; i++) {
             System.out.println(clientInput.nextLine() + "\n");
-        }
-    }
-
-    private void Search(Scanner clientInput, PrintWriter clientOutput) {
-        String Output;
-        TextInputDialog Search = new TextInputDialog();
-        Search.setContentText("Please Enter A Search Term");
-        Search.setTitle("Search");
-        Search.setHeaderText(null);
-        Optional<String> result = Search.showAndWait();
-        Output = "search " + Search.getEditor().getText();
-        clientOutput.println(Output);
-        int n = clientInput.nextInt();
-        clientInput.nextLine();
-        for (int i = 0; i < n; i++) {
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
@@ -137,39 +216,31 @@ public class Client extends Application {
         subscribename.setTitle("Subscribe");
         subscribename.setHeaderText(null);
         Optional<String> result = subscribename.showAndWait();
-        Output = Type + " " + subscribename.getEditor().getText();
-        clientOutput.println(Output);
-        int n = clientInput.nextInt();
-        clientInput.nextLine();
-        for (int i = 0; i < n; i++) {
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        Output = subscribename.getEditor().getText();
+        if (subscribename.getEditor().getText().isEmpty()) {
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
+        }
+        else {
+            HandleSubmit(Type, Output, clientInput, clientOutput);
         }
     }
 
     private void Create(Scanner clientInput, PrintWriter clientOutput) {
-        String Roomoutput;
+        String Output;
+        String Type = "open ";
         TextInputDialog roomname = new TextInputDialog();
         roomname.setContentText("Please Enter A Room Name");
         roomname.setHeaderText(null);
         roomname.setTitle("Room Name Input");
         Optional<String> result = roomname.showAndWait();
-        Roomoutput = roomname.getEditor().getText();
-        String userinput = "open " + Roomoutput;
-        clientOutput.println(userinput);
-        int n = clientInput.nextInt();
-        clientInput.nextLine();
-        for (int i = 0; i < n; i++) {
-            DisplayMessage.appendText(clientInput.nextLine() + "\n");
+        if (result.isEmpty() || roomname.getEditor().getText().equals("")) {
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
         }
-    }
-
-    private void QuitApp(Socket clientSocket, Stage mainScreen) {
-        try {
-            clientSocket.close();
-            mainScreen.close();
-        }
-        catch (IOException ioe) {
-            System.err.println("Error Closing");
+        else {
+            Output = roomname.getEditor().getText();
+            HandleSubmit(Type, Output, clientInput, clientOutput);
         }
     }
 
@@ -191,12 +262,8 @@ public class Client extends Application {
     private void HandleInput (PrintWriter clientOutput, Scanner clientInput)
             throws IOException {
         if (Message.getText().equals("")) {
-            Alert alrt = new Alert(Alert.AlertType.ERROR);
-            alrt.setContentText("Please Enter Some Text");
-            alrt.setTitle("No Text");
-            alrt.setHeaderText(null);
-            alrt.initStyle(StageStyle.UTILITY);
-            alrt.showAndWait();
+            Alert NullTextErrorBox = NullTextErrorBox();
+            NullTextErrorBox.showAndWait();
         }
         else {
             String userInput = "post " + Message.getText();
@@ -207,6 +274,15 @@ public class Client extends Application {
                 DisplayMessage.appendText(clientInput.nextLine() + "\n");
             }
             Message.setText("");
+        }
+    }
+
+    private void HandleSubmit(String Type, String Output, Scanner clientInput, PrintWriter clientOutput) {
+        clientOutput.println(Type + Output);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        for (int i = 0; i < n; i++) {
+            DisplayMessage.appendText(clientInput.nextLine() + "\n");
         }
     }
 
@@ -336,6 +412,7 @@ public class Client extends Application {
         Subscribe  = SubtoRoom();
         ReadRoom = ReadRoom();
         Search = Searchbtn();
+        ImageTest = ImageTest();
         vb.getChildren().add(Quit);
         vb.getChildren().add(Subscribe);
         vb.getChildren().add(Unsubscribe);
@@ -343,6 +420,7 @@ public class Client extends Application {
         vb.getChildren().add(CreateRoom);
         vb.getChildren().add(ReadRoom);
         vb.getChildren().add(Read);
+        //vb.getChildren().add(ImageTest);
         vb.setPrefWidth(150);
         vb.setAlignment(Pos.CENTER);
         vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -354,14 +432,45 @@ public class Client extends Application {
         SendMessage = SendMessage();
         Message = new TextField();
         label = SetLabel();
+        SendMsgToRoom = SendMsgToRoom();
         fp.setHgap(30);
         fp.setPrefHeight(60);
         fp.getChildren().add(label);
         fp.getChildren().add(Message);
         fp.getChildren().add(SendMessage);
+        fp.getChildren().add(SendMsgToRoom);
         fp.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
 
         return fp;
+    }
+
+    private Button ImageTest() {
+        Button btn = new Button();
+        btn.setWrapText(true);
+        btn.setText("Image");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(130);
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Button SendMsgToRoom() {
+        Button btn = new Button();
+        btn.setWrapText(true);
+        btn.setText("Send To");
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(130);
+        btn.setFont(AppFont);
+        return btn;
+    }
+
+    private Alert NullTextErrorBox() {
+        Alert alrt = new Alert(Alert.AlertType.ERROR);
+        alrt.setContentText("Please Enter Some Text");
+        alrt.setTitle("No Text");
+        alrt.setHeaderText(null);
+        alrt.initStyle(StageStyle.UTILITY);
+        return alrt;
     }
     //---------------------------------------------------------------------------------------
 }
