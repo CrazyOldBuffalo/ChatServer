@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import jdk.jfr.StackTrace;
 
 import java.io.*;
 import java.net.Socket;
@@ -115,12 +116,10 @@ public class Client extends Application {
 
     private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {
         ObjectInputStream instream = new ObjectInputStream(clientSocket.getInputStream());
-        clientOutput.println("image");
+        String output = "image";
+        clientOutput.println(output);
         int n = clientInput.nextInt();
-        clientInput.nextLine();
-        for(int i=0; i < n; i++) {
-            System.out.println(clientInput.nextLine());
-        }
+        getFile(instream);
     }
 
     private void getFile(ObjectInputStream instream) throws IOException, ClassNotFoundException {
@@ -419,7 +418,7 @@ public class Client extends Application {
         vb.getChildren().add(CreateRoom);
         vb.getChildren().add(ReadRoom);
         vb.getChildren().add(Read);
-        //vb.getChildren().add(ImageTest);
+        vb.getChildren().add(ImageTest);
         vb.setPrefWidth(150);
         vb.setAlignment(Pos.CENTER);
         vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));

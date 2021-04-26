@@ -73,7 +73,9 @@ public class ClientHandler extends Thread {
                     }
                 }
                 else if ((command.equalsIgnoreCase("image"))) {
-                    sendFile("image.jpeg");
+                    ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+                    sendFile("image.jpeg", out);
+                    out.close();
                 }
                 else if ((command.equalsIgnoreCase("postto") || command.equalsIgnoreCase("pt")) && (room.length() > 1 && argument.length() > 1)) {
                     if (argument.length() > 25) {
@@ -131,8 +133,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private void sendFile(String s) throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+    private void sendFile(String s, ObjectOutputStream out) throws IOException {
         FileInputStream in = new FileInputStream(s);
         long fl = (new File(s)).length();
         int filelen = (int) fl;
@@ -140,9 +141,8 @@ public class ClientHandler extends Thread {
         in.read(barray);
         in.close();
         toClient.println(1);
-        toClient.println(barray);
+        out.writeObject(barray);
         out.flush();
-        out.close();
     }
 
     private void Search(String argument) {
