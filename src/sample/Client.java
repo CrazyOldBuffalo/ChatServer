@@ -115,7 +115,6 @@ public class Client extends Application {
 
     private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {
         ObjectInputStream instream = new ObjectInputStream( clientSocket.getInputStream());
-        PrintWriter outStream = new PrintWriter(clientSocket.getOutputStream(), true);
         clientOutput.println("image");
         int n = clientInput.nextInt();
         clientInput.nextLine();
@@ -196,6 +195,7 @@ public class Client extends Application {
         else {
             Output = Search.getEditor().getText() + " " + Message.getText();
             HandleSubmit(Type, Output, clientInput, clientOutput);
+            Message.setText("");
         }
     }
 
@@ -212,7 +212,7 @@ public class Client extends Application {
         String Output;
         TextInputDialog subscribename = new TextInputDialog();
         subscribename.setContentText("Please Enter A Room Name");
-        subscribename.setTitle("Subscribe");
+        subscribename.setTitle("Subscribe ");
         subscribename.setHeaderText(null);
         Optional<String> result = subscribename.showAndWait();
         Output = subscribename.getEditor().getText();
