@@ -114,7 +114,7 @@ public class Client extends Application {
     }
 
     private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {
-        ObjectInputStream instream = new ObjectInputStream( clientSocket.getInputStream());
+        ObjectInputStream instream = new ObjectInputStream(clientSocket.getInputStream());
         clientOutput.println("image");
         int n = clientInput.nextInt();
         clientInput.nextLine();
