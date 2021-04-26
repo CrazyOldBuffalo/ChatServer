@@ -95,8 +95,8 @@ public class Client extends Application {
             Read.setOnAction(e -> ReadMessages(clientOutput, clientInput));
             ImageTest.setOnAction(e -> {
                 try {
-                    ImageSend(clientSocket, clientOutput, clientInput);
-                } catch (IOException | ClassNotFoundException ioException) {
+                    Image(clientSocket, clientOutput, clientInput);
+                } catch (Exception ioException) {
                     ioException.printStackTrace();
                 }
             });
@@ -112,6 +112,13 @@ public class Client extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void Image(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) {
+        Stage stg = new Stage();
+        ImageFile imgfl = new ImageFile(clientOutput, clientInput, DisplayMessage);
+        imgfl.start(stg);
+        DisplayMessage.appendText("Image Posted");
     }
 
     private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {

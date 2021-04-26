@@ -4,6 +4,7 @@ package sample;
 import javax.imageio.stream.ImageInputStream;
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -18,6 +19,8 @@ public class ClientHandler extends Thread {
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
     private ObjectInputStream imageInputStream;
+    private HashMap<Integer,byte[]> Images = new HashMap<>();
+    Integer imgcount = 0;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
         client = clientSocket;
@@ -122,6 +125,10 @@ public class ClientHandler extends Thread {
                 else if (command.equalsIgnoreCase("search") && argument.length() > 3) {
                     Search(argument);
                 }
+                else if (command.equalsIgnoreCase("SImage")) {
+                    SendImage(argument);
+
+                }
                 else {
                     toClient.println(1);
                     toClient.println("Please Enter a Valid Command and/or Argument");
@@ -131,6 +138,14 @@ public class ClientHandler extends Thread {
         catch (IOException clientHanlderIoException) {
             System.err.println("Exception while connected");
         }
+    }
+
+    private void SendImage(String argument) {
+        byte[] arr =  argument.getBytes();
+        Images.put(imgcount,arr);
+        toClient.println(1);
+        toClient.println("Image Posted");
+        imgcount++;
     }
 
     private void sendFile(String s, ObjectOutputStream out) throws IOException {
