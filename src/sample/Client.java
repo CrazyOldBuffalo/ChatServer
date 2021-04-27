@@ -52,6 +52,7 @@ public class Client extends Application {
     private Button RecieveImage;
     private Button UIMode;
     private ComboBox<String> UIList;
+    private Text Title;
     Integer imgref = 0;
 
     public Client(String username) {
@@ -119,7 +120,7 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
-            UIMode.setOnAction(e -> ChangeMode(Options, Heading, sendmessages));
+            UIMode.setOnAction(e -> ChangeMode(Options, Heading, sendmessages, Displaymessages));
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -135,17 +136,22 @@ public class Client extends Application {
     }
 
 
-    private void ChangeMode(VBox options, FlowPane heading, FlowPane sendmessages) {
+    private void ChangeMode(VBox options, FlowPane heading, FlowPane sendmessages, FlowPane displayMessages) {
         if (UIList.getValue().equalsIgnoreCase("darkmode")) {
             options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
             heading.setBackground(new Background(new BackgroundFill(Color.rgb(45, 51, 59), CornerRadii.EMPTY, Insets.EMPTY)));
             sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
-
+            displayMessages.setBackground(new Background(new BackgroundFill(Color.rgb(75, 89, 97),CornerRadii.EMPTY, Insets.EMPTY)));
+            Title.setFill(Color.rgb(173, 186, 197));
+            label.setTextFill(Color.rgb(173, 186, 197));
         }
         else if (UIList.getValue().equalsIgnoreCase("lightmode")) {
             options.setBackground(new Background(new BackgroundFill(Color.rgb(205, 217, 229), CornerRadii.EMPTY, Insets.EMPTY)));
             heading.setBackground(new Background(new BackgroundFill(Color.rgb(45, 51, 59), CornerRadii.EMPTY, Insets.EMPTY)));
             sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(205, 217, 229), CornerRadii.EMPTY, Insets.EMPTY)));
+            Title.setFill(Color.rgb(36, 41, 72));
+            label.setTextFill(Color.rgb(36, 41, 72));
+
         }
         else {
             System.out.println("Default");
@@ -529,7 +535,7 @@ public class Client extends Application {
 
     private FlowPane Heading() {
         FlowPane pane = new FlowPane();
-        Text Title = Title();
+        Title = Title();
         UIMode = ModeButton();
         Quit = Quit();
         ObservableList<String> options = FXCollections.observableArrayList(
@@ -546,7 +552,7 @@ public class Client extends Application {
         pane.getChildren().add(UIMode);
         pane.setPrefHeight(50);
         pane.setAlignment(Pos.CENTER);
-        pane.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+        pane.setBackground(new Background(new BackgroundFill(Color.rgb(45, 51, 59), CornerRadii.EMPTY, Insets.EMPTY)));
         return pane;
     }
 
