@@ -5,6 +5,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -12,7 +16,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.awt.*;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
@@ -40,6 +46,8 @@ public class Client extends Application {
     private Button SendMessage;
     private Button SendMsgToRoom;
     private Button ImageTest;
+    private Button RecieveImage;
+    Integer imgref = 0;
 
     public Client(String username) {
         this.username = username;
@@ -99,6 +107,13 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
+            RecieveImage.setOnAction(e -> {
+                try {
+                    GetImages(clientOutput,clientInput, clientSocket);
+                } catch (IOException | ClassNotFoundException ioException) {
+                    ioException.printStackTrace();
+                }
+            });
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -110,6 +125,18 @@ public class Client extends Application {
             System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void GetImages(PrintWriter clientOutput, Scanner clientInput, Socket clientSocket) throws IOException, ClassNotFoundException {
+        String Request = "RImage";
+        clientOutput.println(Request);
+        int n = clientInput.nextInt();
+        clientInput.nextLine();
+        FileOutputStream Fout;
+        for (int i = 0; i < n; i++) {
+            String fpath = clientInput.nextLine();
+            Desktop.getDesktop().open(new File(fpath));
         }
     }
 
@@ -417,6 +444,7 @@ public class Client extends Application {
         ReadRoom = ReadRoom();
         Search = Searchbtn();
         ImageTest = ImageTest();
+        RecieveImage = RecieveImage();
         vb.getChildren().add(Quit);
         vb.getChildren().add(Subscribe);
         vb.getChildren().add(Unsubscribe);
@@ -425,10 +453,21 @@ public class Client extends Application {
         vb.getChildren().add(ReadRoom);
         vb.getChildren().add(Read);
         vb.getChildren().add(ImageTest);
+        vb.getChildren().add(RecieveImage);
         vb.setPrefWidth(150);
         vb.setAlignment(Pos.CENTER);
         vb.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
         return vb;
+    }
+
+    private Button RecieveImage() {
+        Button btn = new Button();
+        btn.setText("Get Images");
+        btn.setWrapText(true);
+        btn.setPrefHeight(40);
+        btn.setPrefWidth(130);
+        btn.setFont(AppFont);
+        return btn;
     }
 
     private FlowPane sendMessage() {
