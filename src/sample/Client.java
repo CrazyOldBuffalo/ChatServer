@@ -133,7 +133,6 @@ public class Client extends Application {
         clientOutput.println(Request);
         int n = clientInput.nextInt();
         clientInput.nextLine();
-        FileOutputStream Fout;
         for (int i = 0; i < n; i++) {
             String fpath = clientInput.nextLine();
             Desktop.getDesktop().open(new File(fpath));
