@@ -151,7 +151,6 @@ public class Client extends Application {
             sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(205, 217, 229), CornerRadii.EMPTY, Insets.EMPTY)));
             Title.setFill(Color.rgb(36, 41, 72));
             label.setTextFill(Color.rgb(36, 41, 72));
-
         }
         else {
             System.out.println("Default");
