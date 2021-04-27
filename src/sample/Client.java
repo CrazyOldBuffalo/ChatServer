@@ -4,14 +4,13 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jdk.jfr.StackTrace;
 
 import java.io.*;
 import java.net.Socket;
@@ -114,29 +113,29 @@ public class Client extends Application {
         }
     }
 
-    private void Image(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) {
+    private void Image(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException {
         Stage stg = new Stage();
-        ImageFile imgfl = new ImageFile(clientOutput, clientInput, DisplayMessage);
-        imgfl.start(stg);
-        DisplayMessage.appendText("Image Posted");
+        FileChooser flchooser = new FileChooser();
+        flchooser.setTitle("Open File");
+        File file = flchooser.showOpenDialog(stg);
+        if (file != null) {
+            String Request = "SImage " + file;
+            clientOutput.println(Request);
+            int n = clientInput.nextInt();
+            clientInput.nextLine();
+            for (int i = 0; i < n; i++) {
+                DisplayMessage.appendText(clientInput.nextLine());
+            }
+        }
+        else {
+            Alert err = new Alert(Alert.AlertType.ERROR);
+            err.setTitle("No Image Selected");
+            err.setContentText("You have not selected an error");
+            err.setHeaderText(null);
+            err.initStyle(StageStyle.UTILITY);
+            err.showAndWait();
+        }
     }
-
-    private void ImageSend(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException, ClassNotFoundException {
-        ObjectInputStream instream = new ObjectInputStream(clientSocket.getInputStream());
-        String output = "image";
-        clientOutput.println(output);
-        int n = clientInput.nextInt();
-        getFile(instream);
-    }
-
-    private void getFile(ObjectInputStream instream) throws IOException, ClassNotFoundException {
-        byte[] barray = (byte[])instream.readObject();
-        FileOutputStream out;
-        out = new FileOutputStream("test.jpg");
-        out.write(barray);
-        out.close();
-    }
-
 
     //Button Functions Are All Here, In the Order they Appear
     private void QuitApp(Socket clientSocket, Stage mainScreen) {
