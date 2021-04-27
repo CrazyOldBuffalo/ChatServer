@@ -17,7 +17,7 @@ public class ClientHandler extends Thread {
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
     private ObjectInputStream imageInputStream;
-    private HashMap<Integer, Integer> Images = new HashMap<Integer, Integer>();
+    private HashMap<Integer, String> Images = new HashMap<Integer, String>();
     Integer imgcount = 0;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
@@ -121,6 +121,9 @@ public class ClientHandler extends Thread {
                 else if (command.equalsIgnoreCase("SImage")) {
                     SendImage(argument, client);
                 }
+                else if (command.equalsIgnoreCase("RImage")) {
+                    ReadImages(client);
+                }
                 else {
                     toClient.println(1);
                     toClient.println("Please Enter a Valid Command and/or Argument");
@@ -140,8 +143,23 @@ public class ClientHandler extends Thread {
         toClient.println(1);
         toClient.println("Image recieved");
         in.read(barray);
-        Images.put(imgcount, in.read(barray));
+        Images.put(imgcount, argument);
+        imgcount++;
         in.close();
+    }
+
+    private void ReadImages(Socket clientSocket) throws IOException {
+        if (Images.size() != 0) {
+            int n = Images.size();
+            toClient.println(n);
+            for (int i = 0; i < Images.size(); i++) {
+                toClient.println(Images.get(i));
+            }
+        }
+        else {
+            toClient.println(1);
+            toClient.println("No Images");
+        }
     }
 
     private void Search(String argument) {
