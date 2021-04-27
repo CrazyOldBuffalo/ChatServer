@@ -1,7 +1,6 @@
 package sample;
 
 
-import javax.imageio.stream.ImageInputStream;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -18,6 +17,8 @@ public class ClientHandler extends Thread {
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
     private ObjectInputStream imageInputStream;
+    private HashMap<Integer, Integer> Images = new HashMap<Integer, Integer>();
+    Integer imgcount = 0;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
         client = clientSocket;
@@ -72,11 +73,6 @@ public class ClientHandler extends Thread {
                         }
                     }
                 }
-                else if ((command.equalsIgnoreCase("image"))) {
-                    ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
-                    sendFile("image.jpeg", out);
-                    out.close();
-                }
                 else if ((command.equalsIgnoreCase("postto") || command.equalsIgnoreCase("pt")) && (room.length() > 1 && argument.length() > 1)) {
                     if (argument.length() > 25) {
                         toClient.println(1);
@@ -122,6 +118,9 @@ public class ClientHandler extends Thread {
                 else if (command.equalsIgnoreCase("search") && argument.length() > 3) {
                     Search(argument);
                 }
+                else if (command.equalsIgnoreCase("SImage")) {
+                    SendImage(argument, client);
+                }
                 else {
                     toClient.println(1);
                     toClient.println("Please Enter a Valid Command and/or Argument");
@@ -133,16 +132,16 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private void sendFile(String s, ObjectOutputStream out) throws IOException {
-        FileInputStream in = new FileInputStream(s);
-        long fl = (new File(s)).length();
-        int filelen = (int) fl;
-        byte[] barray = new byte[filelen];
-        in.read(barray);
-        in.close();
+    private void SendImage(String argument, Socket clientSocket) throws IOException {
+        FileInputStream in = new FileInputStream(argument);
+        long filelen = ( new File(argument)).length();
+        int filelength = (int) filelen;
+        byte[] barray = new byte[filelength];
         toClient.println(1);
-        out.writeObject(barray);
-        out.flush();
+        toClient.println("Image recieved");
+        in.read(barray);
+        Images.put(imgcount, in.read(barray));
+        in.close();
     }
 
     private void Search(String argument) {
