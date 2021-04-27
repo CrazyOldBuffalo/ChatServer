@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -25,6 +28,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import static javafx.scene.paint.Color.WHITE;
+import static javafx.scene.paint.Color.color;
 
 public class Client extends Application {
     private final String username;
@@ -46,6 +50,8 @@ public class Client extends Application {
     private Button SendMsgToRoom;
     private Button ImageTest;
     private Button RecieveImage;
+    private Button UIMode;
+    private ComboBox<String> UIList;
     Integer imgref = 0;
 
     public Client(String username) {
@@ -61,11 +67,11 @@ public class Client extends Application {
         BorderPane mainWindow = new BorderPane();
         FlowPane sendmessages = sendMessage();
         FlowPane Displaymessages = new FlowPane();
-        FlowPane Heading = new FlowPane();
+        FlowPane Heading = Heading();
         VBox Options = createOptions();
         DisplayMessage = DisplayMessage();
         Displaymessages.getChildren().add(DisplayMessage);
-
+        mainWindow.setTop(Heading);
         mainWindow.setRight(Options);
         mainWindow.setBottom(sendmessages);
         sendmessages.setAlignment(Pos.CENTER);
@@ -80,7 +86,7 @@ public class Client extends Application {
 
             WelcomeMessage();
 
-            Scene Window = new Scene(mainWindow, 600, 600);
+            Scene Window = new Scene(mainWindow, 600, 700);
             MainScreen.setScene(Window);
             MainScreen.setTitle("Chat Server");
             MainScreen.show();
@@ -113,6 +119,7 @@ public class Client extends Application {
                     ioException.printStackTrace();
                 }
             });
+            UIMode.setOnAction(e -> ChangeMode(Options, Heading, sendmessages));
         } catch (UnknownHostException clientUnknownHostException) {
             System.err.println("Unable to find Host, Exiting");
             System.exit(1);
@@ -124,6 +131,24 @@ public class Client extends Application {
             System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    private void ChangeMode(VBox options, FlowPane heading, FlowPane sendmessages) {
+        if (UIList.getValue().equalsIgnoreCase("darkmode")) {
+            options.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+            heading.setBackground(new Background(new BackgroundFill(Color.rgb(45, 51, 59), CornerRadii.EMPTY, Insets.EMPTY)));
+            sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        }
+        else if (UIList.getValue().equalsIgnoreCase("lightmode")) {
+            options.setBackground(new Background(new BackgroundFill(Color.rgb(205, 217, 229), CornerRadii.EMPTY, Insets.EMPTY)));
+            heading.setBackground(new Background(new BackgroundFill(Color.rgb(45, 51, 59), CornerRadii.EMPTY, Insets.EMPTY)));
+            sendmessages.setBackground(new Background(new BackgroundFill(Color.rgb(205, 217, 229), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+        else {
+            System.out.println("Default");
         }
     }
 
@@ -353,16 +378,6 @@ public class Client extends Application {
         return btn;
     }
 
-    private Button Quit () {
-        Button btn = new Button();
-        btn.setPrefHeight(40);
-        btn.setPrefWidth(130);
-        btn.setFont(AppFont);
-        btn.setText("Quit");
-        btn.setWrapText(true);
-        return btn;
-    }
-
     private TextArea DisplayMessage () {
         TextArea txtarea = new TextArea();
         txtarea.setPrefColumnCount(50);
@@ -435,7 +450,6 @@ public class Client extends Application {
         VBox vb = new VBox();
         vb.setSpacing(20);
         Read = Read();
-        Quit = Quit();
         CreateRoom = CreateRoom();
         Unsubscribe = UnsubtoRoom();
         Subscribe  = SubtoRoom();
@@ -443,7 +457,6 @@ public class Client extends Application {
         Search = Searchbtn();
         ImageTest = ImageTest();
         RecieveImage = RecieveImage();
-        vb.getChildren().add(Quit);
         vb.getChildren().add(Subscribe);
         vb.getChildren().add(Unsubscribe);
         vb.getChildren().add(Search);
@@ -512,6 +525,57 @@ public class Client extends Application {
         alrt.setHeaderText(null);
         alrt.initStyle(StageStyle.UTILITY);
         return alrt;
+    }
+
+    private FlowPane Heading() {
+        FlowPane pane = new FlowPane();
+        Text Title = Title();
+        UIMode = ModeButton();
+        Quit = Quit();
+        ObservableList<String> options = FXCollections.observableArrayList(
+                "LightMode",
+                "DarkMode"
+        );
+
+        UIList = new ComboBox<>(options);
+        UIList.setValue("DarkMode");
+        pane.getChildren().add(Quit);
+        pane.setHgap(20);
+        pane.getChildren().add(Title);
+        pane.getChildren().add(UIList);
+        pane.getChildren().add(UIMode);
+        pane.setPrefHeight(50);
+        pane.setAlignment(Pos.CENTER);
+        pane.setBackground(new Background(new BackgroundFill(Color.rgb(55,71,79), CornerRadii.EMPTY, Insets.EMPTY)));
+        return pane;
+    }
+
+    private Button ModeButton() {
+        Button btn = new Button();
+        btn.setText("Set Mode");
+        btn.setPrefHeight(30);
+        btn.setPrefWidth(100);
+        btn.setFont(AppFont);
+        btn.setWrapText(true);
+        return btn;
+    }
+
+    private Text Title() {
+        Text txt = new Text();
+        txt.setText("Chat Server V0.1");
+        txt.setFont(AppFont);
+        txt.setFill(WHITE);
+        return txt;
+    }
+
+    private Button Quit () {
+        Button btn = new Button();
+        btn.setPrefHeight(30);
+        btn.setPrefWidth(90);
+        btn.setFont(AppFont);
+        btn.setText("Quit");
+        btn.setWrapText(true);
+        return btn;
     }
     //---------------------------------------------------------------------------------------
 }
