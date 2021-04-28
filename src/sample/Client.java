@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import static javafx.scene.paint.Color.WHITE;
-import static javafx.scene.paint.Color.color;
 
 public class Client extends Application {
     private final String username;
@@ -53,7 +52,7 @@ public class Client extends Application {
     private Button UIMode;
     private ComboBox<String> UIList;
     private Text Title;
-    Integer imgref = 0;
+    private static Integer imgref = 0;
 
     public Client(String username) {
         this.username = username;
@@ -158,19 +157,22 @@ public class Client extends Application {
     }
 
     private void GetImages(PrintWriter clientOutput, Scanner clientInput, Socket clientSocket) throws IOException, ClassNotFoundException {
-        String filename = "test.jpeg";
-        FileOutputStream media = new FileOutputStream(filename);
+        FileOutputStream media = null;
         String Request = "RImage";
         clientOutput.println(Request);
         int n = clientInput.nextInt();
+        clientInput.nextLine();
         for (int i = 0; i < n; i++) {
+            String filename = username + imgref + ".jpeg";
+            media = new FileOutputStream(filename);
             ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
             byte[] barray = (byte[])inStream.readObject();
             media.write(barray);
-
+            Desktop.getDesktop().open(new File(filename));
+            imgref++;
         }
+        assert media != null;
         media.close();
-        Desktop.getDesktop().open(new File(filename));
     }
 
     private void Image(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException {
@@ -184,7 +186,7 @@ public class Client extends Application {
             int n = clientInput.nextInt();
             clientInput.nextLine();
             for (int i = 0; i < n; i++) {
-                DisplayMessage.appendText(clientInput.nextLine());
+                DisplayMessage.appendText(clientInput.nextLine() + "\n");
             }
         }
         else {
@@ -221,7 +223,7 @@ public class Client extends Application {
             NullTextErrorBox.showAndWait();
         }
         else {
-            Output = "search " + Search.getEditor().getText();
+            Output = Search.getEditor().getText();
             HandleSubmit(type, Output, clientInput, clientOutput);
         }
 

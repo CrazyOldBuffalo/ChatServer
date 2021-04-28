@@ -17,7 +17,7 @@ public class ClientHandler extends Thread {
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
     private ObjectInputStream imageInputStream;
-    private HashMap<Integer, byte[]> Images = new HashMap<Integer, byte[]>();
+    private static ArrayList<byte[]> Images = new ArrayList<byte[]>();
     Integer imgcount = 0;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
@@ -143,7 +143,7 @@ public class ClientHandler extends Thread {
         toClient.println(1);
         toClient.println("Image recieved");
         in.read(barray);
-        Images.put(imgcount, barray);
+        Images.add(barray);
         imgcount++;
         in.close();
     }
@@ -155,8 +155,9 @@ public class ClientHandler extends Thread {
             for (int i = 0; i < Images.size(); i++) {
                 outStream = new ObjectOutputStream(clientSocket.getOutputStream());
                 outStream.writeObject(Images.get(i));
+                outStream.flush();
             }
-            outStream.flush();
+
         }
         else {
             toClient.println(1);
@@ -178,9 +179,10 @@ public class ClientHandler extends Thread {
         else {
             toClient.println(searchlist.size());
             for (int i = 0; i < searchlist.size(); i++) {
-                toClient.println(open.get(i).getClientName() + " Says: " + open.get(i).getMessage() + " On [ " + open.get(i).getDate() + " ]");
+                toClient.println(searchlist.get(i).getClientName() + " Says: " + searchlist.get(i).getMessage() + " On [ " + searchlist.get(i).getDate() + " ]");
             }
         }
+        searchlist.clear();
     }
 
     private void Unsubscribe(String argument) {

@@ -50,6 +50,7 @@ And then run the Client with:
 
     java Login
 
+If there are issues just run in the IDE
 <hr />
 
 #### Commands/Help
