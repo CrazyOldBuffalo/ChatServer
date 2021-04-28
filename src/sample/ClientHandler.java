@@ -17,7 +17,7 @@ public class ClientHandler extends Thread {
     private static ArrayList<String> clientNames = new ArrayList<>();
     private static HashMap<String, Board> boards = new HashMap<>();
     private ObjectInputStream imageInputStream;
-    private HashMap<Integer, String> Images = new HashMap<Integer, String>();
+    private HashMap<Integer, byte[]> Images = new HashMap<Integer, byte[]>();
     Integer imgcount = 0;
 
     public ClientHandler(Socket clientSocket, Server server) throws IOException{
@@ -143,18 +143,20 @@ public class ClientHandler extends Thread {
         toClient.println(1);
         toClient.println("Image recieved");
         in.read(barray);
-        Images.put(imgcount, argument);
+        Images.put(imgcount, barray);
         imgcount++;
         in.close();
     }
 
     private void ReadImages(Socket clientSocket) throws IOException {
+        ObjectOutputStream outStream = null;
         if (Images.size() != 0) {
-            int n = Images.size();
-            toClient.println(n);
+            toClient.println(Images.size());
             for (int i = 0; i < Images.size(); i++) {
-                toClient.println(Images.get(i));
+                outStream = new ObjectOutputStream(clientSocket.getOutputStream());
+                outStream.writeObject(Images.get(i));
             }
+            outStream.flush();
         }
         else {
             toClient.println(1);
