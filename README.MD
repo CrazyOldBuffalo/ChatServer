@@ -67,6 +67,12 @@ These have been hardcoded for demonstration purposes and can be seen below:
 
 Once Logged in you can send messages to General Chat, Create and Subscribe to Rooms using the specified buttons and unsubscribe from rooms you're subscribed to.
 
-Images can also be sent through to the server and are stored in a specified collection for images and can be read using the corresponding buttons (Image, )
+Images can also be sent through to the server and are stored in a specified collection for images and can be read using the corresponding buttons (Image, GetImages).
+
+Searching can also be done by clicking the Search button, this allows a user to search through a list of posted messages for any messages that have been posted with the search criteria.
+
+The Theme can be changed using the dropdown at the top of the application to either a Dark or Light Mode.
+
+Quitting the App closes it down.
 <hr />
 &copy; Tomasz Boberek - 2021 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NSD - Assignment 3 - GUI
