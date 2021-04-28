@@ -163,7 +163,7 @@ public class Client extends Application {
         int n = clientInput.nextInt();
         clientInput.nextLine();
         for (int i = 0; i < n; i++) {
-            String filename = "img" + imgref + ".jpeg";
+            String filename = username + imgref + ".jpeg";
             media = new FileOutputStream(filename);
             ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
             byte[] barray = (byte[])inStream.readObject();
