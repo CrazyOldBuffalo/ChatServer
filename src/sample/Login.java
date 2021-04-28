@@ -55,14 +55,18 @@ public class Login extends Application {
         try {
             KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
             KeySpec specz = new PBEKeySpec("HiGuyz".toCharArray(), salt, 65536, 128);
+            KeySpec testspec = new PBEKeySpec("testpass1".toCharArray(), salt, 65536, 128);
+            KeySpec stronkpass = new PBEKeySpec("StonkPassword1".toCharArray(), salt, 65536, 128);
             SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] hash = f.generateSecret(spec).getEncoded();
             byte[] hashz = f.generateSecret(specz).getEncoded();
+            byte[] testpass = f.generateSecret(testspec).getEncoded();
+            byte[] stronkpassword = f.generateSecret(stronkpass).getEncoded();
             Base64.Encoder enc = Base64.getEncoder();
             logins.put("Harry", enc.encodeToString(hash));
-            logins.put("Jack", enc.encodeToString(hash));
+            logins.put("Jack", enc.encodeToString(testpass));
             logins.put("Kate", enc.encodeToString(hashz));
-            logins.put("Sammy", enc.encodeToString(hash));
+            logins.put("Sammy", enc.encodeToString(stronkpassword));
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException NSAException) {
             System.err.println("Ooopsie poopsie");

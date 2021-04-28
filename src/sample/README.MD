@@ -26,7 +26,7 @@
 
 <ol>
     <li> Search Fuctionality - Allows a user to search for a string of text within a message, it will return all items containing the search criteria to the client, or a message stating that nothing was found. </li>
-    <li> Encryption - The Password of the login class is encrypted when the credentials are checked and is also checked with a hardcoded password created when the the class is launched.</li>
+    <li> Encryption - The Password of the login class is encrypted when the credentials are checked and is also checked with a hardcoded password created when the the class is launched, which is also Encrypted.</li>
 </ol>
 
 <hr />
@@ -50,5 +50,22 @@ And then run the Client with:
 
     java Login
 
+<hr />
+
+#### Commands/Help
+
+To begin using the application you must first login in the Login.java class, Entering your credentials:
+
+These have been hardcoded for demonstration purposes and can be seen below:
+<ul>
+    <li> Harry: password</li>
+    <li> Jack: testpass1</li>
+    <li> Kate: HiGuyz</li>
+    <li> Sammy: StonkPassword1</li>
+</ul>
+
+Once Logged in you can send messages to General Chat, Create and Subscribe to Rooms using the specified buttons and unsubscribe from rooms you're subscribed to.
+
+Images can also be sent through to the server and are stored in a specified collection for images and can be read using the corresponding buttons (Image, )
 <hr />
 &copy; Tomasz Boberek - 2021 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NSD - Assignment 3 - GUI
