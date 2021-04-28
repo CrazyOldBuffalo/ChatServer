@@ -158,14 +158,19 @@ public class Client extends Application {
     }
 
     private void GetImages(PrintWriter clientOutput, Scanner clientInput, Socket clientSocket) throws IOException, ClassNotFoundException {
+        String filename = "test.jpeg";
+        FileOutputStream media = new FileOutputStream(filename);
         String Request = "RImage";
         clientOutput.println(Request);
         int n = clientInput.nextInt();
-        clientInput.nextLine();
         for (int i = 0; i < n; i++) {
-            String fpath = clientInput.nextLine();
-            Desktop.getDesktop().open(new File(fpath));
+            ObjectInputStream inStream = new ObjectInputStream(clientSocket.getInputStream());
+            byte[] barray = (byte[])inStream.readObject();
+            media.write(barray);
+
         }
+        media.close();
+        Desktop.getDesktop().open(new File(filename));
     }
 
     private void Image(Socket clientSocket, PrintWriter clientOutput, Scanner clientInput) throws IOException {
