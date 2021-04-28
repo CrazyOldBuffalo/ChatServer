@@ -184,7 +184,7 @@ public class Client extends Application {
             int n = clientInput.nextInt();
             clientInput.nextLine();
             for (int i = 0; i < n; i++) {
-                DisplayMessage.appendText(clientInput.nextLine());
+                DisplayMessage.appendText(clientInput.nextLine() + "\n");
             }
         }
         else {
